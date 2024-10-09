@@ -9,13 +9,8 @@ interface LocationMarkerProps {
 }
 
 
-
-
-
 const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, iconUrl }) => {
   const map = useMap();
-
-  console.log('iconUrl :>> ', iconUrl);
 
   const customIcon = icon({
     iconUrl: iconUrl || '/images/cart.png',

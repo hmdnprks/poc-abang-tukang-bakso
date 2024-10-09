@@ -22,7 +22,7 @@ const MapComponent = () => {
 
 
   useEffect(() => {
-    if (navigator.geolocation) {
+    if (typeof window !== 'undefined' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
@@ -32,8 +32,6 @@ const MapComponent = () => {
           console.error("Error fetching location:", error);
         }
       );
-    } else {
-      alert("Geolocation is not supported by this browser.");
     }
   }, []);
 
