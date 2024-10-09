@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Marker, Popup, useMap } from 'react-leaflet';
+import { Marker, Popup, Tooltip, useMap } from 'react-leaflet';
 import { icon, LatLngTuple } from 'leaflet';
 
 interface LocationMarkerProps {
@@ -30,7 +30,14 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
 
   return (
     <Marker position={position} icon={customIcon}>
-      <Popup>{popupText}</Popup>
+      <Popup>
+        <div className="text-lg font-medium">
+          {popupText}
+        </div>
+      </Popup>
+      <Tooltip direction="right" offset={[25, -25]} opacity={1} permanent>
+        {popupText}
+      </Tooltip>
     </Marker>
   );
 };
