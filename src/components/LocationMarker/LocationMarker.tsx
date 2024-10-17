@@ -31,7 +31,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
   return (
     <Marker position={position} icon={customIcon}>
       <Popup>
-        <div className="text-lg font-medium">
+        <div className="text-lg font-medium font-poppins">
           {popupText}
         </div>
       </Popup>

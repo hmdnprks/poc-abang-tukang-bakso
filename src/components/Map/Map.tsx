@@ -7,10 +7,12 @@ import { useEffect, useState } from 'react';
 import LocationMarker from '../LocationMarker/LocationMarker';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import { db } from "../../lib/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, updateDoc, GeoPoint } from "firebase/firestore";
+import { useRouter } from 'next/navigation';
 
 
 const MapComponent = () => {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [position, setPosition] = useState<LatLngTuple | null>([51.505, -0.09]);
   const [vendorMarkers, setVendorMarkers] = useState<{
@@ -52,17 +54,18 @@ const MapComponent = () => {
         const q = query(
           collection(db, "users"),
           where("status", "==", "active"),
-          where("docId", "!=", user.docId)
         );
 
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          if (data.location && data.role) {
+          if (data.docId !== user.docId && data.location && data.role) {
+            const geoPoint = data.location;
+
             const marker = {
               id: doc.id,
-              position: [data.location.latitude, data.location.longitude] as LatLngTuple,
+              position: [geoPoint.latitude, geoPoint.longitude] as LatLngTuple,
               popupText: data.name,
             };
             if (data.role === 'customer') {
@@ -100,8 +103,28 @@ const MapComponent = () => {
     }
   }, [position, user.docId, user.name, user.role]);
 
+  useEffect(() => {
+    if (position && user.docId) {
+      const updateLocation = async () => {
+        setLoading(true);
+        try {
+          const userDocRef = doc(db, "users", user.docId);
+          await updateDoc(userDocRef, {
+            location: new GeoPoint(position[0], position[1]),
+          });
+        } catch (error) {
+          console.error("Error updating location: ", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      updateLocation();
+    }
+  }, [position, user.docId]);
+
   const handleClose = () => {
-    console.log('Close map');
+    router.push('/verification');
   };
 
   return (

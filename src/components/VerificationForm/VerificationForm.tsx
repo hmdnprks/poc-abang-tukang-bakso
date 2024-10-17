@@ -28,6 +28,7 @@ export default function VerificationForm() {
       const docRef = await addDoc(collection(db, "users"), {
         name: data.name,
         role: data.role,
+        status: "active",
         createdAt: new Date(),
       });
       const userData = {
