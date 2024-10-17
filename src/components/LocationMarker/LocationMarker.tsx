@@ -36,7 +36,9 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
         </div>
       </Popup>
       <Tooltip direction="right" offset={[25, -25]} opacity={1} permanent>
-        {popupText}
+        <span className="font-poppins">
+          {popupText}
+        </span>
       </Tooltip>
     </Marker>
   );
