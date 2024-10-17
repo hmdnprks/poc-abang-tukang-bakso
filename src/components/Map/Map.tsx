@@ -70,7 +70,7 @@ const MapComponent = () => {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
+      const watchId = navigator.geolocation.watchPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
           setPosition([latitude, longitude]);
@@ -80,8 +80,15 @@ const MapComponent = () => {
         (error) => {
           console.error("Error fetching location:", error);
           setLoading(false);
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 10000,
+          timeout: 5000,
         }
       );
+
+      return () => navigator.geolocation.clearWatch(watchId);
     } else {
       setLoading(false);
     }
