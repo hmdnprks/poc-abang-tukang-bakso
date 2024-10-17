@@ -46,8 +46,6 @@ const MapComponent = () => {
       const newUserMarkers = [];
       const newVendorMarkers = [];
 
-      console.log('data :>> ', data);
-
       for (const id in data) {
         const userData = data[id];
         if (userData.docId !== user.docId && userData.location && userData.status === "active") {
