@@ -3,7 +3,7 @@
 import { LatLngTuple } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import LocationMarker from '../LocationMarker/LocationMarker';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import { realtimeDb } from "../../lib/firebase";
@@ -29,7 +29,7 @@ const MapComponent = () => {
   }[]>([]);
   const [user] = useLocalStorage('user', { name: '', role: '', docId: '' });
 
-  const updateUserLocation = (latitude: number, longitude: number) => {
+  const updateUserLocation = useCallback((latitude: number, longitude: number) => {
     const userRef = ref(realtimeDb, `users/${user.docId}`);
     set(userRef, {
       name: user.name,
@@ -37,7 +37,7 @@ const MapComponent = () => {
       location: { latitude, longitude },
       status: "active",
     });
-  };
+  }, [user.docId, user.name, user.role]);
 
   useEffect(() => {
     const usersRef = ref(realtimeDb, 'users');
@@ -63,7 +63,11 @@ const MapComponent = () => {
           }
 
           if (id === user.docId) {
-            user.role === 'customer' ? newUserMarkers.push(marker) : newVendorMarkers.push(marker);
+            if (user.role === 'customer') {
+              newUserMarkers.push(marker);
+            } else {
+              newVendorMarkers.push(marker);
+            }
           }
         }
       }
@@ -98,7 +102,7 @@ const MapComponent = () => {
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [updateUserLocation]);
 
   const handleCloseClick = () => {
     setIsDrawerOpen(true);
