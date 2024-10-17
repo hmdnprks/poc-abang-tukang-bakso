@@ -29,6 +29,12 @@ const MapComponent = () => {
   }[]>([]);
   const [user] = useLocalStorage('user', { name: '', role: '', docId: '' });
 
+  useEffect(() => {
+    if (!user || !user.docId) {
+      router.push('/verification');
+    }
+  }, [user, router]);
+
   const updateUserLocation = useCallback((latitude: number, longitude: number) => {
     const userRef = ref(realtimeDb, `users/${user.docId}`);
     set(userRef, {
