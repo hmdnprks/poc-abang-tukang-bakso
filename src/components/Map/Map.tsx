@@ -16,7 +16,7 @@ const MapComponent = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [position, setPosition] = useState<LatLngTuple | null>([51.505, -0.09]);
+  const [position, setPosition] = useState<LatLngTuple | null>(null);
   const [vendorMarkers, setVendorMarkers] = useState<{
     id: string;
     position: LatLngTuple;
@@ -46,27 +46,33 @@ const MapComponent = () => {
       const newUserMarkers = [];
       const newVendorMarkers = [];
 
+
       for (const id in data) {
         const userData = data[id];
-        if (userData.docId !== user.docId && userData.location && userData.status === "active") {
+        if (userData.location && userData.status === "active") {
           const marker = {
             id,
             position: [userData.location.latitude, userData.location.longitude] as LatLngTuple,
             popupText: userData.name,
           };
 
-          if (userData.role === 'customer') {
-            newUserMarkers.push(marker);
-          } else if (userData.role === 'vendor') {
+          if (user.role === 'customer' && userData.role === 'vendor') {
             newVendorMarkers.push(marker);
+          } else if (user.role === 'vendor' && userData.role === 'customer') {
+            newUserMarkers.push(marker);
+          }
+
+          if (id === user.docId) {
+            user.role === 'customer' ? newUserMarkers.push(marker) : newVendorMarkers.push(marker);
           }
         }
       }
+
       setUserMarkers(newUserMarkers);
       setVendorMarkers(newVendorMarkers);
       setLoading(false);
     });
-  }, [user.docId]);
+  }, [user.docId, user.role]);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && navigator.geolocation) {
