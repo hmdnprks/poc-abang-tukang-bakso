@@ -1,11 +1,11 @@
 'use client';
 import Image from 'next/image';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from "../../lib/firebase";
+import { getDatabase, ref, push, set } from 'firebase/database';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import useLocalStorage from '../../hooks/useLocalStorage';
+import { app } from "../../lib/firebase";
 
 type FormData = {
   name: string;
@@ -16,6 +16,7 @@ type FormData = {
 export default function VerificationForm() {
   const router = useRouter();
   const [, setUser] = useLocalStorage('user', { name: '', role: '', docId: '' });
+  const db = getDatabase(app);
 
   const {
     register,
@@ -25,16 +26,19 @@ export default function VerificationForm() {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      const docRef = await addDoc(collection(db, "users"), {
+      const userRef = push(ref(db, "users"));
+
+      await set(userRef, {
         name: data.name,
         role: data.role,
         status: "active",
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       });
+
       const userData = {
         name: data.name,
         role: data.role,
-        docId: docRef.id,
+        docId: userRef.key || '',
       };
 
       setUser(userData);
@@ -43,7 +47,8 @@ export default function VerificationForm() {
 
       router.push("/");
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error("Error adding data to Realtime Database: ", error);
+      toast.error("Failed to submit. Please try again.");
     }
   };
 

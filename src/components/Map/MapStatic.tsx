@@ -6,69 +6,32 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import { useEffect, useState } from 'react';
 import LocationMarker from '../LocationMarker/LocationMarker';
 import useLocalStorage from '../../hooks/useLocalStorage';
-import { realtimeDb } from "../../lib/firebase";
-import { ref, set, onValue, update } from "firebase/database";
+import { db } from "../../lib/firebase";
+import { collection, query, where, getDocs, doc, updateDoc, GeoPoint } from "firebase/firestore";
 import { useRouter } from 'next/navigation';
 import ConfirmationDrawer from '@components/ConfirmationDrawer/ConfirmationDrawer';
 import { toast } from 'react-toastify';
+
 
 const MapComponent = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const [position, setPosition] = useState<LatLngTuple | null>([51.505, -0.09]);
   const [vendorMarkers, setVendorMarkers] = useState<{
     id: string;
     position: LatLngTuple;
     popupText: string;
   }[]>([]);
+
   const [userMarkers, setUserMarkers] = useState<{
     id: string;
     position: LatLngTuple;
     popupText: string;
   }[]>([]);
-  const [user] = useLocalStorage('user', { name: '', role: '', docId: '' });
 
-  const updateUserLocation = (latitude: number, longitude: number) => {
-    const userRef = ref(realtimeDb, `users/${user.docId}`);
-    set(userRef, {
-      name: user.name,
-      role: user.role,
-      location: { latitude, longitude },
-      status: "active",
-    });
-  };
-
-  useEffect(() => {
-    const usersRef = ref(realtimeDb, 'users');
-    onValue(usersRef, (snapshot) => {
-      const data = snapshot.val();
-      const newUserMarkers = [];
-      const newVendorMarkers = [];
-
-      console.log('data :>> ', data);
-
-      for (const id in data) {
-        const userData = data[id];
-        if (userData.docId !== user.docId && userData.location && userData.status === "active") {
-          const marker = {
-            id,
-            position: [userData.location.latitude, userData.location.longitude] as LatLngTuple,
-            popupText: userData.name,
-          };
-
-          if (userData.role === 'customer') {
-            newUserMarkers.push(marker);
-          } else if (userData.role === 'vendor') {
-            newVendorMarkers.push(marker);
-          }
-        }
-      }
-      setUserMarkers(newUserMarkers);
-      setVendorMarkers(newVendorMarkers);
-      setLoading(false);
-    });
-  }, [user.docId]);
+  const [user,] = useLocalStorage('user', { name: '', role: '', docId: '' });
 
   useEffect(() => {
     if (typeof window !== 'undefined' && navigator.geolocation) {
@@ -76,7 +39,6 @@ const MapComponent = () => {
         (pos) => {
           const { latitude, longitude } = pos.coords;
           setPosition([latitude, longitude]);
-          updateUserLocation(latitude, longitude);
           setLoading(false);
         },
         (error) => {
@@ -89,14 +51,90 @@ const MapComponent = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchMarkers = async () => {
+      setLoading(true);
+      try {
+        const q = query(
+          collection(db, "users"),
+          where("status", "==", "active"),
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.docId !== user.docId && data.location && data.role) {
+            const geoPoint = data.location;
+
+            const marker = {
+              id: doc.id,
+              position: [geoPoint.latitude, geoPoint.longitude] as LatLngTuple,
+              popupText: data.name,
+            };
+            if (data.role === 'customer') {
+              setUserMarkers((prevMarkers) => [...prevMarkers, marker]);
+            } else if (data.role === 'vendor') {
+              setVendorMarkers((prevMarkers) => [...prevMarkers, marker]);
+            }
+          }
+        });
+
+      } catch (error) {
+        console.error("Error fetching markers:", error);
+      } finally {
+        setLoading(false);
+      }
+
+    };
+
+    fetchMarkers();
+  }, [user.docId]);
+
+  useEffect(() => {
+    if (position) {
+      const currentUserMarker = {
+        id: user.docId,
+        position: position,
+        popupText: user.name || 'You are here!',
+      };
+
+      if (user.role === 'customer') {
+        setUserMarkers((prevMarkers) => [...prevMarkers, currentUserMarker]);
+      } else if (user.role === 'vendor') {
+        setVendorMarkers((prevMarkers) => [...prevMarkers, currentUserMarker]);
+      }
+    }
+  }, [position, user.docId, user.name, user.role]);
+
+  useEffect(() => {
+    if (position && user.docId) {
+      const updateLocation = async () => {
+        setLoading(true);
+        try {
+          const userDocRef = doc(db, "users", user.docId);
+          await updateDoc(userDocRef, {
+            location: new GeoPoint(position[0], position[1]),
+          });
+        } catch (error) {
+          console.error("Error updating location: ", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      updateLocation();
+    }
+  }, [position, user.docId]);
+
   const handleCloseClick = () => {
     setIsDrawerOpen(true);
   };
 
   const handleConfirm = async () => {
     try {
-      const userRef = ref(realtimeDb, `users/${user.docId}`);
-      await update(userRef, { status: "inactive" });
+      const userDocRef = doc(db, "users", user.docId);
+      await updateDoc(userDocRef, { status: "inactive" });
       let message = "Kamu telah keluar dari pantauan Tukang Bakso";
       if (user.role === 'vendor') {
         message = "Kamu telah menonaktifkan status Tukang Bakso";
