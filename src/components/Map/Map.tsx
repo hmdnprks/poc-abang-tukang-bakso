@@ -9,11 +9,15 @@ import useLocalStorage from '../../hooks/useLocalStorage';
 import { db } from "../../lib/firebase";
 import { collection, query, where, getDocs, doc, updateDoc, GeoPoint } from "firebase/firestore";
 import { useRouter } from 'next/navigation';
+import ConfirmationDrawer from '@components/ConfirmationDrawer/ConfirmationDrawer';
+import { toast } from 'react-toastify';
 
 
 const MapComponent = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const [position, setPosition] = useState<LatLngTuple | null>([51.505, -0.09]);
   const [vendorMarkers, setVendorMarkers] = useState<{
     id: string;
@@ -123,15 +127,31 @@ const MapComponent = () => {
     }
   }, [position, user.docId]);
 
-  const handleClose = () => {
-    router.push('/verification');
+  const handleCloseClick = () => {
+    setIsDrawerOpen(true);
+  };
+
+  const handleConfirm = async () => {
+    try {
+      const userDocRef = doc(db, "users", user.docId);
+      await updateDoc(userDocRef, { status: "inactive" });
+      let message = "Kamu telah keluar dari pantauan Tukang Bakso";
+      if (user.role === 'vendor') {
+        message = "Kamu telah menonaktifkan status Tukang Bakso";
+      }
+      toast.info(message);
+      router.push('/verification');
+    } catch (error) {
+      console.error("Error updating user status: ", error);
+    }
+    setIsDrawerOpen(false);
   };
 
   return (
     <div className='relative'>
       <button
-        onClick={handleClose}
-        className="absolute top-4 right-4 z-50 p-2 bg-white rounded-full shadow-xl hover:bg-gray-200 transition duration-200"
+        onClick={handleCloseClick}
+        className="absolute top-4 right-4 z-20 p-2 bg-white rounded-full shadow-xl hover:bg-gray-200 transition duration-200"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -163,6 +183,13 @@ const MapComponent = () => {
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin"></div>
           </div>
         )}
+
+        <ConfirmationDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          onConfirm={handleConfirm}
+          message={`Dengan menutup halaman ini, kamu akan keluar dari pantauan ${user.role === 'customer' ? 'Tukang Bakso' : 'Customer'}`}
+        />
       </div>
     </div>
   );
