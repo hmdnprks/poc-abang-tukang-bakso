@@ -27,7 +27,11 @@ const MapComponent = () => {
     position: LatLngTuple;
     popupText: string;
   }[]>([]);
-  const [user] = useLocalStorage('user', { name: '', role: '', docId: '' });
+  const [user, setUser] = useLocalStorage<{
+    name: string;
+    role: string;
+    docId: string;
+  }>('user', { name: '', role: '', docId: '' });
 
   useEffect(() => {
     if (!user || !user.docId) {
@@ -123,6 +127,11 @@ const MapComponent = () => {
         message = "Kamu telah menonaktifkan status Tukang Bakso";
       }
       toast.info(message);
+      setUser({
+        name: '',
+        role: '',
+        docId: '',
+      })
       router.push('/verification');
     } catch (error) {
       console.error("Error updating user status: ", error);
