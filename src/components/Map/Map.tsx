@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import LocationMarker from '../LocationMarker/LocationMarker';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import { realtimeDb } from "../../lib/firebase";
-import { ref, set, onValue, update } from "firebase/database";
+import { ref, onValue, update } from "firebase/database";
 import { useRouter } from 'next/navigation';
 import ConfirmationDrawer from '@components/ConfirmationDrawer/ConfirmationDrawer';
 import { toast } from 'react-toastify';
