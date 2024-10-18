@@ -42,9 +42,8 @@ const MapComponent = () => {
   const updateUserLocation = useCallback((latitude: number, longitude: number) => {
     if (!user || !user.docId) return;
     const userRef = ref(realtimeDb, `users/${user.docId}`);
-    set(userRef, {
-      name: user.name,
-      role: user.role,
+
+    update(userRef, {
       location: { latitude, longitude },
       status: "active",
     });
