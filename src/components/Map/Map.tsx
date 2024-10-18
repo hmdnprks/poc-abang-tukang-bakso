@@ -40,6 +40,7 @@ const MapComponent = () => {
   }, [user, router]);
 
   const updateUserLocation = useCallback((latitude: number, longitude: number) => {
+    if (!user || !user.docId) return;
     const userRef = ref(realtimeDb, `users/${user.docId}`);
     set(userRef, {
       name: user.name,
@@ -50,6 +51,8 @@ const MapComponent = () => {
   }, [user.docId, user.name, user.role]);
 
   useEffect(() => {
+    if (!user || !user.docId) return;
+
     const usersRef = ref(realtimeDb, 'users');
     onValue(usersRef, (snapshot) => {
       const data = snapshot.val();
@@ -89,6 +92,8 @@ const MapComponent = () => {
   }, [user.docId, user.role]);
 
   useEffect(() => {
+    if (!user || !user.docId) return;
+
     if (typeof window !== 'undefined' && navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
         (pos) => {
@@ -119,6 +124,8 @@ const MapComponent = () => {
   };
 
   const handleConfirm = async () => {
+    if (!user || !user.docId) return;
+
     try {
       const userRef = ref(realtimeDb, `users/${user.docId}`);
       await update(userRef, { status: "inactive" });
