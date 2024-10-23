@@ -87,7 +87,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
   const calculateRoute = async (origin: LatLngTuple, destination: LatLngTuple): Promise<RouteData | null> => {
     const [originLat, originLon] = origin;
     const [destLat, destLon] = destination;
-    const url = `http://router.project-osrm.org/route/v1/foot/${originLon},${originLat};${destLon},${destLat}?overview=full&geometries=geojson`;
+    const url = `https://router.project-osrm.org/route/v1/foot/${originLon},${originLat};${destLon},${destLat}?overview=full&geometries=geojson`;
 
     try {
       const response = await fetch(url);
