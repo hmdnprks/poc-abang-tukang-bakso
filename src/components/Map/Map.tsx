@@ -162,20 +162,20 @@ const MapComponent = () => {
           zoom={20}
           className="h-full w-full transition-opacity duration-300 z-10"
           style={{ opacity: loading ? 0.5 : 1 }}
+          attributionControl={false}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           {vendorMarkers.map((marker) => (
-            <LocationMarker key={marker.id} position={marker.position} popupText={marker.popupText} />
+            <LocationMarker key={marker.id} position={marker.position} popupText={marker.popupText} userPosition={position} />
           ))}
           {userMarkers.map((marker) => (
-            <LocationMarker key={marker.id} position={marker.position} popupText={marker.popupText} iconUrl="/images/user.png" />
+            <LocationMarker key={marker.id} position={marker.position} popupText={marker.popupText} userPosition={position} iconUrl="/images/user.png" />
           ))}
         </MapContainer>
 
-        {/* Loading Overlay */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin"></div>
