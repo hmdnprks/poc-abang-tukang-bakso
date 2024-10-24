@@ -41,7 +41,7 @@ const MapComponent = () => {
           setPosition([latitude, longitude]);
           setLoading(false);
         },
-        (error) => {
+        () => {
           setLoading(false);
         }
       );
@@ -80,6 +80,7 @@ const MapComponent = () => {
         });
 
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error fetching markers:', error);
       } finally {
         setLoading(false);
@@ -116,6 +117,7 @@ const MapComponent = () => {
             location: new GeoPoint(position[0], position[1]),
           });
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Error updating location: ', error);
         } finally {
           setLoading(false);
@@ -141,6 +143,7 @@ const MapComponent = () => {
       toast.info(message);
       router.push('/verification');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error updating user status: ', error);
     }
     setIsDrawerOpen(false);
@@ -169,7 +172,8 @@ const MapComponent = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {vendorMarkers.map((marker) => (
-            <LocationMarker key={marker.id} popupText={marker.popupText} position={marker.position} />
+            <LocationMarker key={marker.id} popupText={marker.popupText}
+              position={marker.position} />
           ))}
           {userMarkers.map((marker) => (
             <LocationMarker iconUrl="/images/user.png" key={marker.id} popupText={marker.popupText} position={marker.position} />

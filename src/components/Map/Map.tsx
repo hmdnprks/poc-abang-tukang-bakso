@@ -101,7 +101,7 @@ const MapComponent = () => {
           updateUserLocation(latitude, longitude);
           setLoading(false);
         },
-        (error) => {
+        () => {
           setLoading(false);
         },
         {

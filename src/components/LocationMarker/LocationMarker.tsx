@@ -71,7 +71,6 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getDirectionFromStep = (step: any): string => {
     switch (step.maneuver.type) {
       case 'turn':

@@ -88,7 +88,7 @@ export default function VerificationForm() {
             </div>
             <button
               className={`w-full py-2 mt-4 rounded-full font-poppins text-white ${isValid ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-300 cursor-not-allowed'
-                }`}
+              }`}
               disabled={!isValid}
               type="submit"
             >
