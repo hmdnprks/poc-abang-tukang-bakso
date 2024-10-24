@@ -23,7 +23,7 @@ const DirectionBox: React.FC<DirectionsProps> = ({ steps }) => {
       default:
         return null;
     }
-  }
+  };
 
 
   return (

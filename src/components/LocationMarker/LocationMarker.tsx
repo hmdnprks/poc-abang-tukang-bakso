@@ -84,9 +84,11 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
   };
 
 
-  const calculateRoute = async (origin: LatLngTuple, destination: LatLngTuple): Promise<RouteData | null> => {
+  const calculateRoute = async (origin: LatLngTuple, destination: LatLngTuple):
+    Promise<RouteData | null> => {
     const [originLat, originLon] = origin;
     const [destLat, destLon] = destination;
+    // eslint-disable-next-line max-len
     const url = `https://router.project-osrm.org/route/v1/foot/${originLon},${originLat};${destLon},${destLat}?overview=full&geometries=geojson`;
 
     try {
@@ -99,7 +101,6 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
 
         const distanceInKilometers = route.distance / 1000;
         const durationInMinutes = estimateDuration(distanceInKilometers, 'bike');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const routeSteps = route.legs[0].steps.map((step: any) => ({
           direction: getDirectionFromStep(step),
           description: step?.name,
@@ -113,11 +114,9 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
           waypoints: data.waypoints
         };
       } else {
-        console.error('No route found');
         return null;
       }
     } catch (error) {
-      console.error('Error fetching route:', error);
       return null;
     }
   };
@@ -131,10 +130,10 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
 
   return (
     <>
-      <Marker position={position} icon={customIcon} eventHandlers={{
+      <Marker eventHandlers={{
         click: handleMarkerClick,
         popupclose: handlePopupClose
-      }}>
+      }} icon={customIcon} position={position}>
         <Popup
 
         >
@@ -157,10 +156,10 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
 
       {showRoute && route && (
         <Polyline
-          positions={route}
           color="blue"
-          weight={4}
           opacity={0.6}
+          positions={route}
+          weight={4}
         />
       )}
 

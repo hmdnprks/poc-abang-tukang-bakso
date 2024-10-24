@@ -1,5 +1,5 @@
 // pages/MapComponent.js
-'use client'
+'use client';
 import { LatLngTuple } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer } from 'react-leaflet';
@@ -38,7 +38,8 @@ const MapComponent = () => {
           setPosition([latitude, longitude]);
         },
         (error) => {
-          console.error("Error fetching location:", error);
+          // eslint-disable-next-line no-console
+          console.error('Error fetching location:', error);
         }
       );
     }
@@ -46,22 +47,22 @@ const MapComponent = () => {
 
   useEffect(() => {
     const vendorMarkers = [
-      { id: 1, position: [-6.2285, 106.8170] as LatLngTuple, popupText: "Marker 1" },
-      { id: 2, position: [-6.2310, 106.8195] as LatLngTuple, popupText: "Marker 2" },
-      { id: 3, position: [-6.2298, 106.8200] as LatLngTuple, popupText: "Marker 3" },
-      { id: 4, position: [-6.2322, 106.8189] as LatLngTuple, popupText: "Marker 4" },
+      { id: 1, position: [-6.2285, 106.8170] as LatLngTuple, popupText: 'Marker 1' },
+      { id: 2, position: [-6.2310, 106.8195] as LatLngTuple, popupText: 'Marker 2' },
+      { id: 3, position: [-6.2298, 106.8200] as LatLngTuple, popupText: 'Marker 3' },
+      { id: 4, position: [-6.2322, 106.8189] as LatLngTuple, popupText: 'Marker 4' },
     ];
 
     const usersMarkers = [
-      { id: 5, position: [-6.2283, 106.8167] as LatLngTuple, popupText: "Marker 5" },
-      { id: 6, position: [-6.2308, 106.8201] as LatLngTuple, popupText: "Marker 6" },
-      { id: 7, position: [-6.2295, 106.8192] as LatLngTuple, popupText: "Marker 7" },
-      { id: 8, position: [-6.2315, 106.8175] as LatLngTuple, popupText: "Marker 8" },
-      { id: 9, position: [-6.2301, 106.8182] as LatLngTuple, popupText: "Marker 9" },
+      { id: 5, position: [-6.2283, 106.8167] as LatLngTuple, popupText: 'Marker 5' },
+      { id: 6, position: [-6.2308, 106.8201] as LatLngTuple, popupText: 'Marker 6' },
+      { id: 7, position: [-6.2295, 106.8192] as LatLngTuple, popupText: 'Marker 7' },
+      { id: 8, position: [-6.2315, 106.8175] as LatLngTuple, popupText: 'Marker 8' },
+      { id: 9, position: [-6.2301, 106.8182] as LatLngTuple, popupText: 'Marker 9' },
     ];
 
     if (position) {
-      vendorMarkers.push({ id: 5, position: position, popupText: "You are here!" });
+      vendorMarkers.push({ id: 5, position: position, popupText: 'You are here!' });
       setMarkers(vendorMarkers);
       setUserMarkers(usersMarkers);
     }
@@ -90,18 +91,19 @@ const MapComponent = () => {
       <div className={`h-full w-full ${loading ? 'animate-spin-slow' : ''}`}>
         <MapContainer
           center={position || [51.505, -0.09]}
-          zoom={13}
           className="h-full w-full"
+          zoom={13}
         >
           <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {markers.map((marker) => (
-            <LocationMarker key={marker.id} position={marker.position} popupText={marker.popupText} />
+            <LocationMarker key={marker.id} popupText={marker.popupText}
+              position={marker.position} />
           ))}
           {userMarkers.map((marker) => (
-            <LocationMarker key={marker.id} position={marker.position} popupText={marker.popupText} iconUrl="/images/user.png" />
+            <LocationMarker iconUrl="/images/user.png" key={marker.id} popupText={marker.popupText} position={marker.position} />
           ))}
         </MapContainer>
       </div>
@@ -109,7 +111,7 @@ const MapComponent = () => {
       {/* Loading Spinner */}
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full"></div>
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full" />
         </div>
       )}
     </div>

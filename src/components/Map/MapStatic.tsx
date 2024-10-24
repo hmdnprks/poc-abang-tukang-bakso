@@ -1,13 +1,13 @@
 // pages/MapComponent.js
-'use client'
+'use client';
 import { LatLngTuple } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useEffect, useState } from 'react';
 import LocationMarker from '../LocationMarker/LocationMarker';
 import useLocalStorage from '../../hooks/useLocalStorage';
-import { db } from "../../lib/firebase";
-import { collection, query, where, getDocs, doc, updateDoc, GeoPoint } from "firebase/firestore";
+import { db } from '../../lib/firebase';
+import { collection, query, where, getDocs, doc, updateDoc, GeoPoint } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import ConfirmationDrawer from '@components/ConfirmationDrawer/ConfirmationDrawer';
 import { toast } from 'react-toastify';
@@ -42,7 +42,6 @@ const MapComponent = () => {
           setLoading(false);
         },
         (error) => {
-          console.error("Error fetching location:", error);
           setLoading(false);
         }
       );
@@ -56,8 +55,8 @@ const MapComponent = () => {
       setLoading(true);
       try {
         const q = query(
-          collection(db, "users"),
-          where("status", "==", "active"),
+          collection(db, 'users'),
+          where('status', '==', 'active'),
         );
 
         const querySnapshot = await getDocs(q);
@@ -81,7 +80,7 @@ const MapComponent = () => {
         });
 
       } catch (error) {
-        console.error("Error fetching markers:", error);
+        console.error('Error fetching markers:', error);
       } finally {
         setLoading(false);
       }
@@ -112,12 +111,12 @@ const MapComponent = () => {
       const updateLocation = async () => {
         setLoading(true);
         try {
-          const userDocRef = doc(db, "users", user.docId);
+          const userDocRef = doc(db, 'users', user.docId);
           await updateDoc(userDocRef, {
             location: new GeoPoint(position[0], position[1]),
           });
         } catch (error) {
-          console.error("Error updating location: ", error);
+          console.error('Error updating location: ', error);
         } finally {
           setLoading(false);
         }
@@ -133,62 +132,62 @@ const MapComponent = () => {
 
   const handleConfirm = async () => {
     try {
-      const userDocRef = doc(db, "users", user.docId);
-      await updateDoc(userDocRef, { status: "inactive" });
-      let message = "Kamu telah keluar dari pantauan Tukang Bakso";
+      const userDocRef = doc(db, 'users', user.docId);
+      await updateDoc(userDocRef, { status: 'inactive' });
+      let message = 'Kamu telah keluar dari pantauan Tukang Bakso';
       if (user.role === 'vendor') {
-        message = "Kamu telah menonaktifkan status Tukang Bakso";
+        message = 'Kamu telah menonaktifkan status Tukang Bakso';
       }
       toast.info(message);
       router.push('/verification');
     } catch (error) {
-      console.error("Error updating user status: ", error);
+      console.error('Error updating user status: ', error);
     }
     setIsDrawerOpen(false);
   };
 
   return (
-    <div className='relative'>
+    <div className="relative">
       <button
-        onClick={handleCloseClick}
         className="absolute top-4 right-4 z-20 p-2 bg-white rounded-full shadow-xl hover:bg-gray-200 transition duration-200"
+        onClick={handleCloseClick}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+        <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
         </svg>
       </button>
       <div className="h-screen w-full md:h-screen md:w-screen">
         <MapContainer
-          key={loading ? 'loading' : 'loaded'}
           center={position || [51.505, -0.09]}
-          zoom={20}
           className="h-full w-full transition-opacity duration-300 z-10"
+          key={loading ? 'loading' : 'loaded'}
           style={{ opacity: loading ? 0.5 : 1 }}
+          zoom={20}
         >
           <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {vendorMarkers.map((marker) => (
-            <LocationMarker key={marker.id} position={marker.position} popupText={marker.popupText} />
+            <LocationMarker key={marker.id} popupText={marker.popupText} position={marker.position} />
           ))}
           {userMarkers.map((marker) => (
-            <LocationMarker key={marker.id} position={marker.position} popupText={marker.popupText} iconUrl="/images/user.png" />
+            <LocationMarker iconUrl="/images/user.png" key={marker.id} popupText={marker.popupText} position={marker.position} />
           ))}
         </MapContainer>
 
         {/* Loading Overlay */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
-            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin" />
           </div>
         )}
 
         <ConfirmationDrawer
           isOpen={isDrawerOpen}
+          message={`Dengan menutup halaman ini, kamu akan keluar dari pantauan ${user.role === 'customer' ? 'Tukang Bakso' : 'Customer'}`}
           onClose={() => setIsDrawerOpen(false)}
           onConfirm={handleConfirm}
-          message={`Dengan menutup halaman ini, kamu akan keluar dari pantauan ${user.role === 'customer' ? 'Tukang Bakso' : 'Customer'}`}
         />
       </div>
     </div>
