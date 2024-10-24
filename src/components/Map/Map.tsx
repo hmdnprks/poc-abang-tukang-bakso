@@ -47,7 +47,7 @@ const MapComponent = () => {
       location: { latitude, longitude },
       status: 'active',
     });
-  }, [user.docId, user.name, user.role]);
+  }, [user]);
 
   useEffect(() => {
     if (!user || !user.docId) { return; }
@@ -88,7 +88,7 @@ const MapComponent = () => {
       setVendorMarkers(newVendorMarkers);
       setLoading(false);
     });
-  }, [user.docId, user.role]);
+  }, [user]);
 
   useEffect(() => {
     if (!user || !user.docId) { return; }
@@ -115,7 +115,7 @@ const MapComponent = () => {
     } else {
       setLoading(false);
     }
-  }, [updateUserLocation]);
+  }, [updateUserLocation, user]);
 
   const handleCloseClick = () => {
     setIsDrawerOpen(true);
