@@ -36,6 +36,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
   const [showRoute, setShowRoute] = useState<boolean>(false);
   const [steps, setSteps] = useState<Step[]>([]);
   const [wayPoints, setWayPoints] = useState<Waypoint[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const map = useMap();
 
@@ -83,41 +84,46 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
   };
 
 
-  const calculateRoute = async (origin: LatLngTuple, destination: LatLngTuple):
+  const calculateRoute = async (origin: LatLngTuple, destination: LatLngTuple, retries = 3, delay = 1000):
     Promise<RouteData | null> => {
     const [originLat, originLon] = origin;
     const [destLat, destLon] = destination;
     // eslint-disable-next-line max-len
     const url = `https://router.project-osrm.org/route/v1/foot/${originLon},${originLat};${destLon},${destLat}?overview=full&geometries=geojson`;
 
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) { throw new Error('Network response was not ok'); }
+        const data = await response.json();
 
-      if (data.routes && data.routes.length > 0) {
-        const route = data.routes[0];
+        if (data.routes && data.routes.length > 0) {
+          const route = data.routes[0];
 
+          const distanceInKilometers = route.distance / 1000;
+          const durationInMinutes = estimateDuration(distanceInKilometers, 'bike');
+          const routeSteps = route.legs[0].steps.map((step: any) => ({
+            direction: getDirectionFromStep(step),
+            description: step?.name,
+          }));
 
-        const distanceInKilometers = route.distance / 1000;
-        const durationInMinutes = estimateDuration(distanceInKilometers, 'bike');
-        const routeSteps = route.legs[0].steps.map((step: any) => ({
-          direction: getDirectionFromStep(step),
-          description: step?.name,
-        }));
-
-        return {
-          distance: distanceInKilometers,
-          duration: durationInMinutes,
-          geometry: route.geometry,
-          steps: routeSteps,
-          waypoints: data.waypoints
-        };
-      } else {
-        return null;
+          return {
+            distance: distanceInKilometers,
+            duration: durationInMinutes,
+            geometry: route.geometry,
+            steps: routeSteps,
+            waypoints: data.waypoints
+          };
+        }
+      } catch (error) {
+        if (attempt === retries) {
+          setError('Gagal mengambil data rute. Silakan cek koneksi internet Anda dan coba lagi.');
+          return null;
+        }
+        await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, attempt)));
       }
-    } catch (error) {
-      return null;
     }
+    return null;
   };
 
   const handlePopupClose = () => {
@@ -142,6 +148,11 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
               <div className="font-poppins">
                 <p>Jarak: {routeInfo.distance}</p>
                 <p>Perkiraan Waktu: {routeInfo.duration}</p>
+              </div>
+            )}
+            {error && (
+              <div className="text-red-500 mt-2">
+                <p>{error}</p>
               </div>
             )}
           </div>
