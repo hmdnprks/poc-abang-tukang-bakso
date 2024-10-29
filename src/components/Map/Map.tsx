@@ -34,7 +34,7 @@ const MapComponent = () => {
   }>('user', { name: '', role: '', docId: '' });
 
   const [permissionDenied, setPermissionDenied] = useState(false);
-  const [, setGpsError] = useState(false);
+  const [gpsError, setGpsError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
   const MAX_RETRIES = 3;
@@ -220,16 +220,22 @@ const MapComponent = () => {
         <ConfirmationDrawer
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
-          onConfirm={permissionDenied ? handleRetry : handleConfirm}
+          onConfirm={permissionDenied || gpsError ? handleRetry : handleConfirm}
         >
           {permissionDenied ? (
             <>
-              <p>Kami membutuhkan akses ke lokasi kamu untuk memberikan pelacakan real-time Tukang Bakso dan Customer.</p>
+              <p className="font-semibold">Akses lokasi ditolak</p>
               <p className="text-sm text-gray-500 mt-4">Mohon mengaktifkan layanan lokasi di pengaturan browser kamu dan coba lagi.</p>
             </>
-          ) : (
-            <p>{`Dengan menutup halaman ini, kamu akan keluar dari pantauan ${user.role === 'customer' ? 'Tukang Bakso' : 'Customer'}`}</p>
-          )}
+          ) : gpsError ? (
+            <>
+              <p className="font-semibold">Sinyal GPS lemah</p>
+              <p className="text-sm text-gray-500 mt-4">Mohon pastikan kamu berada di tempat dengan sinyal GPS yang baik dan coba lagi.</p>
+            </>
+          )
+            : (
+              <p>{`Dengan menutup halaman ini, kamu akan keluar dari pantauan ${user.role === 'customer' ? 'Tukang Bakso' : 'Customer'}`}</p>
+            )}
         </ConfirmationDrawer>
       </div>
     </div>
