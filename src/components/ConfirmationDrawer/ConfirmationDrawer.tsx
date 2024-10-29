@@ -1,18 +1,18 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import Image from 'next/image';
 
 interface ConfirmationDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  message: string;
+  children: ReactNode
 }
 
 const ConfirmationDrawer: FC<ConfirmationDrawerProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  message
+  children
 }) => {
   return (
     <>
@@ -32,7 +32,7 @@ const ConfirmationDrawer: FC<ConfirmationDrawerProps> = ({
 
         <div className="flex flex-col items-center">
           <Image alt="Warning" className="mb-4" height={100} src="/images/confirmation.png" width={100} />
-          <p className="text-center text-gray-700 mb-6">{message}</p>
+          <div className="text-center text-gray-700 mb-6">{children}</div>
 
           <button
             className="w-full bg-red-500 text-white py-2 rounded-full font-semibold mb-3 hover:bg-red-600 transition"

@@ -169,6 +169,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
       {showRoute && wayPoints.length > 0 && (
         <WaypointsBox waypoints={wayPoints} />
       )}
+
     </>
   );
 };

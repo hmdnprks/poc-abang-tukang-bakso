@@ -33,6 +33,12 @@ const MapComponent = () => {
     docId: string;
   }>('user', { name: '', role: '', docId: '' });
 
+  const [permissionDenied, setPermissionDenied] = useState(false);
+  const [, setGpsError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const MAX_RETRIES = 3;
+
   useEffect(() => {
     if (!user || !user.docId) {
       router.push('/verification');
@@ -90,9 +96,7 @@ const MapComponent = () => {
     });
   }, [user]);
 
-  useEffect(() => {
-    if (!user || !user.docId) { return; }
-
+  const requestLocationAccess = () => {
     if (typeof window !== 'undefined' && navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
         (pos) => {
@@ -100,9 +104,26 @@ const MapComponent = () => {
           setPosition([latitude, longitude]);
           updateUserLocation(latitude, longitude);
           setLoading(false);
+          setGpsError(false);
+          setIsDrawerOpen(false);
         },
-        () => {
+        (error) => {
           setLoading(false);
+          if (error.code === error.PERMISSION_DENIED) {
+            setPermissionDenied(true);
+            setIsDrawerOpen(true);
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            setGpsError(true);
+            setIsDrawerOpen(true);
+            if (retryCount < MAX_RETRIES) {
+              setTimeout(() => {
+                setRetryCount(retryCount + 1);
+                requestLocationAccess();
+              }, 5000);
+            } else {
+              toast.error('Gagal mendapatkan lokasi karena GPS tidak tersedia. Mohon coba lagi nanti.');
+            }
+          }
         },
         {
           enableHighAccuracy: true,
@@ -115,7 +136,15 @@ const MapComponent = () => {
     } else {
       setLoading(false);
     }
-  }, [updateUserLocation, user]);
+  };
+
+  useEffect(() => {
+    if (!user || !user.docId) {
+      router.push('/verification');
+    } else {
+      requestLocationAccess();
+    }
+  }, [user]);
 
   const handleCloseClick = () => {
     setIsDrawerOpen(true);
@@ -142,6 +171,11 @@ const MapComponent = () => {
       // eslint-disable-next-line no-console
       console.error('Error updating user status: ', error);
     }
+    setIsDrawerOpen(false);
+  };
+
+  const handleRetry = () => {
+    setPermissionDenied(false);
     setIsDrawerOpen(false);
   };
 
@@ -185,10 +219,18 @@ const MapComponent = () => {
 
         <ConfirmationDrawer
           isOpen={isDrawerOpen}
-          message={`Dengan menutup halaman ini, kamu akan keluar dari pantauan ${user.role === 'customer' ? 'Tukang Bakso' : 'Customer'}`}
           onClose={() => setIsDrawerOpen(false)}
-          onConfirm={handleConfirm}
-        />
+          onConfirm={permissionDenied ? handleRetry : handleConfirm}
+        >
+          {permissionDenied ? (
+            <>
+              <p>Kami membutuhkan akses ke lokasi kamu untuk memberikan pelacakan real-time Tukang Bakso dan Customer.</p>
+              <p className="text-sm text-gray-500 mt-4">Mohon mengaktifkan layanan lokasi di pengaturan browser kamu dan coba lagi.</p>
+            </>
+          ) : (
+            <p>{`Dengan menutup halaman ini, kamu akan keluar dari pantauan ${user.role === 'customer' ? 'Tukang Bakso' : 'Customer'}`}</p>
+          )}
+        </ConfirmationDrawer>
       </div>
     </div>
   );
