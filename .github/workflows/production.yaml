@@ -123,6 +123,6 @@ jobs:
           curl -s -X POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID -d text="$MESSAGE"
 
       - name: ZAP Scan
-        uses: zaproxy/action-baseline@v0.12.0
+        uses: zaproxy/action-baseline@v0.13.0
         with:
           target: ${{ env.PRODUCTION_DEPLOYMENT_URL }}
