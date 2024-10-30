@@ -1,3 +1,5 @@
+[![Production Deployment](https://github.com/hmdnprks/poc-abang-tukang-bakso/actions/workflows/production.yaml/badge.svg)](https://github.com/hmdnprks/poc-abang-tukang-bakso/actions/workflows/production.yaml)
+
 # POC Abang Tukang Bakso
 
 This is a location-based application built with Next.js, React, and Firebase. The application tracks the real-time location of customers and vendors (e.g., "Tukang Bakso") and displays them on an interactive map.
@@ -42,6 +44,7 @@ Open http://localhost:3000 with your browser to see the result.
 You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
 
 ## Project Structure
+
 ```bash
 .DS_Store
 .env
@@ -61,6 +64,7 @@ src/
 ```
 
 ## Environment Variables
+
 Create a `.env.local` file in the root directory and add your Firebase configuration:
 
 ```bash
@@ -73,27 +77,33 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
 NEXT_PUBLIC_FIREBASE_DATABASE_URL=your_database_url
 ```
+
 ## Available Scripts
+
 In the project directory, you can run:
 
 ```bash
 npm run dev
 ```
+
 Runs the app in the development mode. Open http://localhost:3000 to view it in the browser.
 
 ```bash
 npm run build
 ```
+
 Builds the app for production to the `.next` folder.
 
 ```bash
 npm run start
 ```
+
 Starts the production server.
 
 ```bash
 npm run lint
 ```
+
 Runs ESLint to check for linting errors.
 
 ## Technologies Used
