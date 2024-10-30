@@ -1,0 +1,128 @@
+name: Vercel Production Deployment
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  NODE_VERSION: '20'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  PRODUCTION_DEPLOYMENT_URL: 'https://poc-map-bakso.hamdan.id/'
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    outputs:
+      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with coverage
+        run: npm run test:ci
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ env.CODECOV_TOKEN }}
+          file: ./coverage/lcov.info
+
+      # Run SonarQube analysis
+      - name: Run SonarQube Scanner
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.projectKey=hmdnprks_poc-abang-tukang-bakso
+            -Dsonar.organization=hmdnprks
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.login=${{ env.SONAR_TOKEN }}
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=**/*.spec.ts,**/*.spec.tsx,**/*.config.js,**/*.config.ts,**/*.setup.js,src/interfaces/*.ts,src/app/profile/*.tsx,src/middleware.ts
+
+      # Check SonarQube Quality Gate Status
+      - name: Check SonarQube Quality Gate Status
+        id: quality_gate
+        run: |
+          URL="https://sonarcloud.io/api/qualitygates/project_status?projectKey=hmdnprks_poc-abang-tukang-bakso"
+          TOKEN="${{ secrets.SONAR_TOKEN }}"
+          STATUS="NONE"
+          while [ "$STATUS" != "OK" ] && [ "$STATUS" != "ERROR" ]; do
+            RESPONSE=$(curl -u $TOKEN: "$URL")
+            STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
+            if [ "$STATUS" == "NONE" ]; then
+              echo "Quality Gate status is pending..."
+              sleep 10
+            elif [ "$STATUS" == "ERROR" ]; then
+              echo "Quality Gate failed."
+              echo "::set-output name=quality_gate_passed::false"
+              exit 0
+            fi
+          done
+          echo "Quality Gate passed."
+          echo "::set-output name=quality_gate_passed::true"
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # Conditional step based on Quality Gate result
+      - name: Halt Deployment Due to Failed Quality Gate
+        if: steps.quality_gate.outputs.quality_gate_passed != 'true'
+        run: |
+          echo "Halting deployment due to failed Quality Gate."
+          exit 1
+
+      # Build and deploy to Vercel and capture deployment URL
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        if: success() && steps.quality_gate.outputs.quality_gate_passed == 'true'
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} > deployment-url.txt
+
+      - name: Extract Deployment URL
+        if: success()
+        id: extract-url
+        run: echo "::set-output name=deployment-url::$(tail -1 deployment-url.txt)"
+
+      # Send success or failure notification to Telegram
+      - name: Send Success Notification
+        if: success()
+        run: |
+          DEPLOYMENT_URL="https://poc-map-bakso.hamdan.id"
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+          MESSAGE=$(printf "✅🚀 Production Deployment Succeeded\n\nRepository: ${{ github.repository }}\nCommit: $SHORT_SHA\nCommit message: $COMMIT_MESSAGE\nLast commit: $COMMIT_URL\n\nView deployment: $DEPLOYMENT_URL")
+          curl -s -X POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID -d text="$MESSAGE"
+
+      - name: Send Failure Notification
+        if: failure()
+        run: |
+          GITHUB_RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+          MESSAGE=$(printf "❌ Production Deployment Failed\n\nRepository: ${{ github.repository }}\nCommit: $SHORT_SHA\nCommit message: $COMMIT_MESSAGE\nLast commit: $COMMIT_URL\n\nCheck details: $GITHUB_RUN_URL")
+          curl -s -X POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID -d text="$MESSAGE"
+
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: ${{ env.PRODUCTION_DEPLOYMENT_URL }}

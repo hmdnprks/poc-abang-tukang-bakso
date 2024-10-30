@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "next"
+        versions: ["14.x.x"]
+      - dependency-name: "typescript"
+        versions: ["5.x.x"]
