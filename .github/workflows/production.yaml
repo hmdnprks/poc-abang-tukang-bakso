@@ -17,34 +17,41 @@ on:
       - main
 
 jobs:
-  Deploy-Production:
+  setup:
     runs-on: ubuntu-latest
-    outputs:
-      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
     steps:
       - uses: actions/checkout@v2
-
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
-
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+  install_dependencies:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v2
       - name: Install dependencies
         run: npm install
 
+  test_coverage:
+    runs-on: ubuntu-latest
+    needs: install_dependencies
+    steps:
       - name: Run tests with coverage
         run: npm run test:ci
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ env.CODECOV_TOKEN }}
           file: ./coverage/lcov.info
 
-      # Run SonarQube analysis
+  sonar_analysis:
+    runs-on: ubuntu-latest
+    needs: test_coverage
+    steps:
       - name: Run SonarQube Scanner
         uses: SonarSource/sonarcloud-github-action@master
         with:
@@ -55,8 +62,6 @@ jobs:
             -Dsonar.login=${{ env.SONAR_TOKEN }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=**/*.spec.ts,**/*.spec.tsx,**/*.config.js,**/*.config.ts,**/*.setup.js,src/interfaces/*.ts,src/app/profile/*.tsx,src/middleware.ts
-
-      # Check SonarQube Quality Gate Status
       - name: Check SonarQube Quality Gate Status
         id: quality_gate
         run: |
@@ -80,30 +85,27 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # Conditional step based on Quality Gate result
-      # - name: Halt Deployment Due to Failed Quality Gate
-      #   if: steps.quality_gate.outputs.quality_gate_passed != 'true'
-      #   run: |
-      #     echo "Halting deployment due to failed Quality Gate."
-      #     exit 1
-
-      # Build and deploy to Vercel and capture deployment URL
+  build_deploy:
+    runs-on: ubuntu-latest
+    needs: sonar_analysis
+    if: needs.sonar_analysis.outputs.quality_gate_passed == 'true'
+    steps:
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel
-        if: success()
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} > deployment-url.txt
-
       - name: Extract Deployment URL
-        if: success()
         id: extract-url
         run: echo "::set-output name=deployment-url::$(tail -1 deployment-url.txt)"
 
-      # Send success or failure notification to Telegram
+  notifications:
+    runs-on: ubuntu-latest
+    needs: [build_deploy, sonar_analysis]
+    steps:
       - name: Send Success Notification
-        if: success()
+        if: needs.build_deploy.result == 'success'
         run: |
           DEPLOYMENT_URL="https://poc-map-bakso.hamdan.id"
           SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
@@ -111,9 +113,8 @@ jobs:
           COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
           MESSAGE=$(printf "✅🚀 Production Deployment Succeeded\n\nRepository: ${{ github.repository }}\nCommit: $SHORT_SHA\nCommit message: $COMMIT_MESSAGE\nLast commit: $COMMIT_URL\n\nView deployment: $DEPLOYMENT_URL")
           curl -s -X POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID -d text="$MESSAGE"
-
       - name: Send Failure Notification
-        if: failure()
+        if: needs.build_deploy.result == 'failure'
         run: |
           GITHUB_RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
@@ -122,6 +123,10 @@ jobs:
           MESSAGE=$(printf "❌ Production Deployment Failed\n\nRepository: ${{ github.repository }}\nCommit: $SHORT_SHA\nCommit message: $COMMIT_MESSAGE\nLast commit: $COMMIT_URL\n\nCheck details: $GITHUB_RUN_URL")
           curl -s -X POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID -d text="$MESSAGE"
 
+  security_scan:
+    runs-on: ubuntu-latest
+    needs: build_deploy
+    steps:
       - name: ZAP Scan
         uses: zaproxy/action-baseline@v0.13.0
         with:
