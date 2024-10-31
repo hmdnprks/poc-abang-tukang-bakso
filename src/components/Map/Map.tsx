@@ -43,13 +43,13 @@ const MapComponent = () => {
   const MAX_RETRIES = 3;
 
   useEffect(() => {
-    if (!user || !user.docId) {
+    if (!user?.docId) {
       router.push('/verification');
     }
   }, [user, router]);
 
   const updateUserLocation = useCallback((latitude: number, longitude: number) => {
-    if (!user || !user.docId) { return; }
+    if (!user?.docId) { return; }
     const userRef = ref(realtimeDb, `users/${user.docId}`);
 
     update(userRef, {
