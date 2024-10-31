@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'unsafe-eval' 'strict-dynamic' https: http:;
     style-src 'self';
-    img-src 'self' blob: data: https://*.tile.openstreetmap.org;
+    img-src 'self' blob: data: https://*.tile.openstreetmap.org https://googletagmanager.com;
     font-src 'self' data:;
     object-src 'none';
     base-uri 'self';
