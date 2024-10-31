@@ -27,27 +27,14 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
-  install_dependencies:
+  install_and_test:
     runs-on: ubuntu-latest
     needs: setup
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: npm install
-
-  test_coverage:
-    runs-on: ubuntu-latest
-    needs: install_dependencies
-    steps:
-      - uses: actions/checkout@v2
       - name: Run tests with coverage
         run: npm run test:ci
       - name: Upload coverage to Codecov
@@ -58,7 +45,7 @@ jobs:
 
   sonar_analysis:
     runs-on: ubuntu-latest
-    needs: test_coverage
+    needs: install_and_test
     steps:
       - name: Run SonarQube Scanner
         uses: SonarSource/sonarcloud-github-action@master
