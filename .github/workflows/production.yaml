@@ -46,6 +46,8 @@ jobs:
   sonar_analysis:
     runs-on: ubuntu-latest
     needs: install_and_test
+    outputs:
+      quality_gate_passed: ${{ steps.quality_gate.outputs.quality_gate_passed }}
     steps:
       - name: Run SonarQube Scanner
         uses: SonarSource/sonarcloud-github-action@master
