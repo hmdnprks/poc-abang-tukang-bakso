@@ -17,6 +17,7 @@ const MapComponent = () => {
   const [loading, setLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [position, setPosition] = useState<LatLngTuple | null>(null);
+
   const [vendorMarkers, setVendorMarkers] = useState<{
     id: string;
     position: LatLngTuple;
@@ -32,6 +33,8 @@ const MapComponent = () => {
     role: string;
     docId: string;
   }>('user', { name: '', role: '', docId: '' });
+
+  position?.[0];
 
   const [permissionDenied, setPermissionDenied] = useState(false);
   const [gpsError, setGpsError] = useState(false);
@@ -56,7 +59,7 @@ const MapComponent = () => {
   }, [user]);
 
   useEffect(() => {
-    if (!user || !user.docId) { return; }
+    if (!user?.docId) { return; }
 
     const usersRef = ref(realtimeDb, 'users');
     onValue(usersRef, (snapshot) => {
@@ -139,7 +142,7 @@ const MapComponent = () => {
   };
 
   useEffect(() => {
-    if (!user || !user.docId) {
+    if (!user?.docId) {
       router.push('/verification');
     } else {
       requestLocationAccess();
@@ -151,7 +154,7 @@ const MapComponent = () => {
   };
 
   const handleConfirm = async () => {
-    if (!user || !user.docId) { return; }
+    if (!user?.docId) { return; }
 
     try {
       const userRef = ref(realtimeDb, `users/${user.docId}`);

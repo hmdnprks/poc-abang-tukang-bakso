@@ -41,7 +41,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
   const map = useMap();
 
   const customIcon = icon({
-    iconUrl: iconUrl || '/images/cart.png',
+    iconUrl: iconUrl ?? '/images/cart.png',
     iconSize: [40, 40],
     iconAnchor: [12, 41],
     popupAnchor: [0, -30],

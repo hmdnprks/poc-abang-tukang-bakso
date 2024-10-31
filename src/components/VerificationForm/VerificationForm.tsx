@@ -38,7 +38,7 @@ export default function VerificationForm() {
       const userData = {
         name: data.name,
         role: data.role,
-        docId: userRef.key || '',
+        docId: userRef.key ?? '',
       };
 
       setUser(userData);
@@ -52,7 +52,7 @@ export default function VerificationForm() {
   };
 
   return (
-    <>
+    <div>
       <div className="flex min-h-screen items-center justify-center bg-gray-100">
         <div className="w-11/12 max-w-md md:bg-white bg-transparent p-4 md:p-8 md:rounded-lg rounded-none md:shadow-md shadow-none text-center">
           <div className="mb-6">
@@ -88,7 +88,7 @@ export default function VerificationForm() {
             </div>
             <button
               className={`w-full py-2 mt-4 rounded-full font-poppins text-white ${isValid ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-300 cursor-not-allowed'
-              }`}
+                }`}
               disabled={!isValid}
               type="submit"
             >
@@ -109,6 +109,6 @@ export default function VerificationForm() {
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 }
