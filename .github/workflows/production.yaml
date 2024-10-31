@@ -43,7 +43,7 @@ jobs:
           token: ${{ env.CODECOV_TOKEN }}
           file: ./coverage/lcov.info
       - name: Upload Coverage Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/lcov.info
@@ -56,7 +56,7 @@ jobs:
       quality_gate_passed: ${{ steps.quality_gate.outputs.quality_gate_passed }}
     steps:
       - name: Download Coverage Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: coverage-report
       - name: Run SonarQube Scanner
