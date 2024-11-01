@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
 
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'unsafe-eval' 'strict-dynamic' https: http:;
+    script-src 'self' 'nonce-${nonce}' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' https: http:;
     style-src 'self';
     img-src 'self' blob: data: https://*.tile.openstreetmap.org https://googletagmanager.com;
     font-src 'self' data:;
@@ -16,6 +16,7 @@ export function middleware(request: NextRequest) {
     upgrade-insecure-requests;
     connect-src 'self' https://firebase.googleapis.com https://www.googleapis.com https://*.firebasedatabase.app https://www.google-analytics.com
       wss://*.firebasedatabase.app;
+    script-src-elem 'self' 'nonce-${nonce}' 'strict-dynamic' https: http:;
   `;
 
   const contentSecurityPolicyHeaderValue = cspHeader.replace(/\s{2,}/g, ' ').trim();
