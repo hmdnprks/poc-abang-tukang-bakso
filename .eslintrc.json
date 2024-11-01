@@ -68,7 +68,6 @@
     "react/no-danger": 2,
     "react/no-did-mount-set-state": 2,
     "react/no-direct-mutation-state": 2,
-    "react/no-multi-comp": 2,
     "react/no-unknown-property": 2,
     "react/no-unused-state": 2,
     "react/prefer-es6-class": 2,

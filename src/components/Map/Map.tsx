@@ -12,6 +12,38 @@ import { useRouter } from 'next/navigation';
 import ConfirmationDrawer from '@components/ConfirmationDrawer/ConfirmationDrawer';
 import { toast } from 'react-toastify';
 
+const ContentConfirmation = ({ permissionDenied, gpsError, user }: {
+  permissionDenied: boolean;
+  gpsError: boolean;
+  user: { role: string };
+}) => {
+  const renderPermissionDenied = () => (
+    <>
+      <p className="font-semibold">Akses lokasi ditolak</p>
+      <p className="text-sm text-gray-500 mt-4">Mohon mengaktifkan layanan lokasi di pengaturan browser kamu dan coba lagi.</p>
+    </>
+  );
+
+  const renderGpsError = () => (
+    <>
+      <p className="font-semibold">Sinyal GPS lemah</p>
+      <p className="text-sm text-gray-500 mt-4">Mohon pastikan kamu berada di tempat dengan sinyal GPS yang baik dan coba lagi.</p>
+    </>
+  );
+
+  const renderDefault = () => (
+    <p>{`Dengan menutup halaman ini, kamu akan keluar dari pantauan ${user.role === 'customer' ? 'Tukang Bakso' : 'Customer'}`}</p>
+  );
+
+  if (permissionDenied) {
+    return renderPermissionDenied();
+  } else if (gpsError) {
+    return renderGpsError();
+  } else {
+    return renderDefault();
+  }
+};
+
 const MapComponent = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -33,8 +65,6 @@ const MapComponent = () => {
     role: string;
     docId: string;
   }>('user', { name: '', role: '', docId: '' });
-
-  position?.[0];
 
   const [permissionDenied, setPermissionDenied] = useState(false);
   const [gpsError, setGpsError] = useState(false);
@@ -182,6 +212,8 @@ const MapComponent = () => {
     setIsDrawerOpen(false);
   };
 
+
+
   return (
     <div className="relative">
       <button
@@ -225,20 +257,7 @@ const MapComponent = () => {
           onClose={() => setIsDrawerOpen(false)}
           onConfirm={permissionDenied || gpsError ? handleRetry : handleConfirm}
         >
-          {permissionDenied ? (
-            <>
-              <p className="font-semibold">Akses lokasi ditolak</p>
-              <p className="text-sm text-gray-500 mt-4">Mohon mengaktifkan layanan lokasi di pengaturan browser kamu dan coba lagi.</p>
-            </>
-          ) : gpsError ? (
-            <>
-              <p className="font-semibold">Sinyal GPS lemah</p>
-              <p className="text-sm text-gray-500 mt-4">Mohon pastikan kamu berada di tempat dengan sinyal GPS yang baik dan coba lagi.</p>
-            </>
-          )
-            : (
-              <p>{`Dengan menutup halaman ini, kamu akan keluar dari pantauan ${user.role === 'customer' ? 'Tukang Bakso' : 'Customer'}`}</p>
-            )}
+          <ContentConfirmation gpsError={gpsError} permissionDenied={permissionDenied} user={user} />
         </ConfirmationDrawer>
       </div>
     </div>

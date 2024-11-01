@@ -17,7 +17,7 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Poppins', var(--font-tsel-batik),
+  font-family: 'Poppins', var(--font-tsel-batik), sans-serif;
 }
 
 @layer utilities {
