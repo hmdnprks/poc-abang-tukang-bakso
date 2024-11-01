@@ -16,7 +16,7 @@ export function middleware(request: NextRequest) {
     upgrade-insecure-requests;
     connect-src 'self' https://firebase.googleapis.com https://www.googleapis.com https://*.firebasedatabase.app https://www.google-analytics.com
       wss://*.firebasedatabase.app;
-    script-src-elem 'self' 'nonce-${nonce}' 'strict-dynamic' https: http:;
+    script-src-elem 'self' 'nonce-${nonce}' 'unsafe-inline' https: http:;
   `;
 
   const contentSecurityPolicyHeaderValue = cspHeader.replace(/\s{2,}/g, ' ').trim();
