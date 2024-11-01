@@ -1,9 +1,13 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "editor.formatOnSave": true,
   "eslint.alwaysShowStatus": true,
   "alias-resolver.type": "custom",
-  "alias-resolver.accessPath": "next.config.js"
+  "alias-resolver.accessPath": "next.config.js",
+  "sonarlint.connectedMode.project": {
+    "connectionId": "hmdnprks",
+    "projectKey": "hmdnprks_poc-abang-tukang-bakso"
+  }
 }

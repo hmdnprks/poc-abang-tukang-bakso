@@ -65,8 +65,9 @@ export default function VerificationForm() {
 
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div>
-              <label className="block text-left text-gray-600">Nama</label>
+              <label className="block text-left text-gray-600" htmlFor="name">Nama</label>
               <input
+                id="name"
                 placeholder="Masukkan nama"
                 type="text"
                 {...register('name', { required: 'Nama harus diisi', maxLength: { value: 60, message: 'Max 60 characters' } })}
@@ -75,8 +76,9 @@ export default function VerificationForm() {
               {errors.name && <p className="text-red-500 text-sm mt-1 text-left">{errors.name.message}</p>}
             </div>
             <div>
-              <label className="block text-left font-poppins text-gray-600">Role</label>
+              <label className="block text-left font-poppins text-gray-600" htmlFor="role">Role</label>
               <select
+                id="role"
                 {...register('role', { required: 'Role harus diisi' })}
                 className="w-full border border-gray-300 rounded-lg p-2 mt-1 text-gray-700"
               >

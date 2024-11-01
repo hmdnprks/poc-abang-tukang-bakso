@@ -56,19 +56,20 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
     }
   }, [position, map]);
 
-  const handleMarkerClick = async () => {
+  const handleMarkerClick = () => {
     if (userPosition) {
-      const distanceDuration = await calculateRoute(userPosition, position);
-      if (distanceDuration) {
-        setRoute(distanceDuration.geometry.coordinates.map(coord => [coord[1], coord[0]] as LatLngTuple));
-        setRouteInfo({
-          distance: parseFloat(distanceDuration.distance.toFixed(2)).toLocaleString('id-ID') + ' km',
-          duration: parseFloat(distanceDuration.duration.toFixed(2)).toLocaleString('id-ID') + ' menit',
-        });
-        setSteps(distanceDuration.steps);
-        setWayPoints(distanceDuration.waypoints || []);
-        setShowRoute(true);
-      }
+      calculateRoute(userPosition, position).then(distanceDuration => {
+        if (distanceDuration) {
+          setRoute(distanceDuration.geometry.coordinates.map(coord => [coord[1], coord[0]] as LatLngTuple));
+          setRouteInfo({
+            distance: parseFloat(distanceDuration.distance.toFixed(2)).toLocaleString('id-ID') + ' km',
+            duration: parseFloat(distanceDuration.duration.toFixed(2)).toLocaleString('id-ID') + ' menit',
+          });
+          setSteps(distanceDuration.steps);
+          setWayPoints(distanceDuration.waypoints || []);
+          setShowRoute(true);
+        }
+      });
     }
   };
 

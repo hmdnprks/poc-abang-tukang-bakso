@@ -29,8 +29,8 @@ const DirectionBox: React.FC<DirectionsProps> = ({ steps }) => {
   return (
     <div className={styles['direction-box']}>
       <h3>Directions</h3>
-      {steps.map((step, index) => (
-        <div className={styles['direction-step']} key={`step-${index}`}>
+      {steps.map((step) => (
+        <div className={styles['direction-step']} key={step.description}>
           {getIcon(step.direction)}
           <span>{step.description}</span>
         </div>
