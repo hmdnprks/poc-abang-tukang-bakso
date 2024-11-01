@@ -97,28 +97,33 @@ const MapComponent = () => {
       const newUserMarkers = [];
       const newVendorMarkers = [];
 
+      const createMarker = (id: string, latitude: number, longitude: number, name: string) => ({
+        id,
+        position: [latitude, longitude] as LatLngTuple,
+        popupText: name,
+      });
+
+      const isMatchingRole = (userRole: string, dataRole: string) =>
+        (userRole === 'customer' && dataRole === 'vendor') ||
+        (userRole === 'vendor' && dataRole === 'customer');
 
       for (const id in data) {
         const userData = data[id];
-        if (userData.location && userData.status === 'active') {
-          const marker = {
-            id,
-            position: [userData.location.latitude, userData.location.longitude] as LatLngTuple,
-            popupText: userData.name,
-          };
+        const { location, status, name, role } = userData;
 
-          if (user.role === 'customer' && userData.role === 'vendor') {
-            newVendorMarkers.push(marker);
-          } else if (user.role === 'vendor' && userData.role === 'customer') {
-            newUserMarkers.push(marker);
+        if (location && status === 'active') {
+          const marker = createMarker(id, location.latitude, location.longitude, name);
+
+          if (isMatchingRole(user.role, role)) {
+            if (user.role === 'customer') {
+              newVendorMarkers.push(marker);
+            } else {
+              newUserMarkers.push(marker);
+            }
           }
 
           if (id === user.docId) {
-            if (user.role === 'customer') {
-              newUserMarkers.push(marker);
-            } else {
-              newVendorMarkers.push(marker);
-            }
+            (user.role === 'customer' ? newUserMarkers : newVendorMarkers).push(marker);
           }
         }
       }
@@ -127,6 +132,7 @@ const MapComponent = () => {
       setVendorMarkers(newVendorMarkers);
       setLoading(false);
     });
+
   }, [user]);
 
   const requestLocationAccess = () => {
