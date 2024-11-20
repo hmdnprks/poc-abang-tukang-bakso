@@ -140,9 +140,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
         click: handleMarkerClick,
         popupclose: handlePopupClose
       }} icon={customIcon} position={position}>
-        <Popup
-
-        >
+        <Popup data-testid="popup">
           <div className="font-medium">
             <p className="text-lg font-tsel-batik font-semibold">{popupText}</p>
             {routeInfo && (
@@ -158,7 +156,7 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
             )}
           </div>
         </Popup>
-        <Tooltip direction="right" offset={[25, -25]} opacity={1} permanent>
+        <Tooltip data-testid="tooltip" direction="right" offset={[25, -25]} opacity={1} permanent>
           <span className="font-poppins">
             {popupText}
           </span>

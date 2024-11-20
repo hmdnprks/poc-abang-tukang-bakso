@@ -218,12 +218,11 @@ const MapComponent = () => {
     setIsDrawerOpen(false);
   };
 
-
-
   return (
     <div className="relative">
       <button
         className="absolute top-4 right-4 z-20 p-2 bg-white rounded-full shadow-xl hover:bg-gray-200 transition duration-200"
+        data-testid="btn-close"
         onClick={handleCloseClick}
       >
         <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -244,27 +243,29 @@ const MapComponent = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {vendorMarkers.map((marker) => (
-            <LocationMarker key={marker.id} popupText={marker.popupText} position={marker.position}
+            <LocationMarker data-testid="location-marker" key={marker.id} popupText={marker.popupText} position={marker.position}
               userPosition={position} />
           ))}
           {userMarkers.map((marker) => (
-            <LocationMarker iconUrl="/images/user.png" key={marker.id} popupText={marker.popupText} position={marker.position} userPosition={position} />
+            <LocationMarker data-testid="location-marker" iconUrl="/images/user.png" key={marker.id} popupText={marker.popupText} position={marker.position} userPosition={position} />
           ))}
         </MapContainer>
 
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75" data-testid="spinner">
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin" />
           </div>
         )}
 
-        <ConfirmationDrawer
-          isOpen={isDrawerOpen}
-          onClose={() => setIsDrawerOpen(false)}
-          onConfirm={permissionDenied || gpsError ? handleRetry : handleConfirm}
-        >
-          <ContentConfirmation gpsError={gpsError} permissionDenied={permissionDenied} user={user} />
-        </ConfirmationDrawer>
+        <div data-testid="confirmation-drawer">
+          <ConfirmationDrawer
+            isOpen={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+            onConfirm={permissionDenied || gpsError ? handleRetry : handleConfirm}
+          >
+            <ContentConfirmation gpsError={gpsError} permissionDenied={permissionDenied} user={user} />
+          </ConfirmationDrawer>
+        </div>
       </div>
     </div>
   );

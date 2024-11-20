@@ -17,11 +17,11 @@ const ConfirmationDrawer: FC<ConfirmationDrawerProps> = ({
   return (
     <>
       {isOpen && (
-        <button className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={onClose} />
+        <button aria-label="Overlay" className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={onClose} />
       )}
 
-      <div
-        className={`fixed inset-x-0 ${isOpen ? 'bottom-0 md:top-1/4 md:bottom-auto' : '-bottom-full'}
+      {isOpen && (<div
+        className={`fixed inset-x-0 bottom-0 md:top-1/4 md:bottom-auto
                     transition-transform duration-300 transform bg-white rounded-t-3xl
                     md:rounded-2xl z-50
                     md:max-w-md md:w-1/3 md:mx-auto md:shadow-lg p-6 flex flex-col items-center`}
@@ -47,7 +47,7 @@ const ConfirmationDrawer: FC<ConfirmationDrawerProps> = ({
             Batal
           </button>
         </div>
-      </div>
+      </div>)}
     </>
   );
 };

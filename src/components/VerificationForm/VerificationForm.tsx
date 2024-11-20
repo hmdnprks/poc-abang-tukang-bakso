@@ -91,6 +91,7 @@ export default function VerificationForm() {
             <button
               className={`w-full py-2 mt-4 rounded-full font-poppins text-white ${isValid ? 'bg-red-500 hover:bg-red-600' :
                 'bg-gray-300 cursor-not-allowed'}`}
+              data-testid="submit"
               disabled={!isValid}
               type="submit"
             >
@@ -103,7 +104,7 @@ export default function VerificationForm() {
                 {...register('terms', { required: 'Kamu harus menyetujui syarat dan ketentuan' })}
                 className="mt-1 mr-2"
               />
-              <label className="text-sm font-poppins text-gray-500 text-left" htmlFor="terms">
+              <label className="text-sm font-poppins text-gray-500 text-left" data-testid="tnc" htmlFor="terms">
                 Dengan menggunakan aplikasi ini Anda telah setuju untuk membagikan lokasi Anda kepada para tukang Bakso Keliling.
               </label>
             </div>
