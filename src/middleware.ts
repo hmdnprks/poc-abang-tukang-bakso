@@ -14,8 +14,7 @@ export function middleware(request: NextRequest) {
     form-action 'self';
     frame-ancestors 'none';
     upgrade-insecure-requests;
-    connect-src 'self' https://firebase.googleapis.com https://www.googleapis.com https://*.firebasedatabase.app https://www.google-analytics.com
-      wss://*.firebasedatabase.app;
+    connect-src 'self' http: https: wss:;
     script-src-elem 'self' 'unsafe-inline' https: http:;
   `;
 
