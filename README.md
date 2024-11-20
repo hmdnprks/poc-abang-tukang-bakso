@@ -15,7 +15,6 @@ This is a location-based application built with Next.js, React, and Firebase. Th
   - [Technologies Used](#technologies-used)
   - [Security Best Practices](#security-best-practices)
   - [Learn More](#learn-more)
-  - [Deploy on Vercel](#deploy-on-vercel)
 
 ## Getting Started
 
@@ -121,16 +120,14 @@ Runs ESLint to check for linting errors.
 
 1. **Environment Variables**: Store sensitive information in environment variables.
 2. **Firebase Security Rules**: Implement strict Firestore and Realtime Database security rules.
-3. **Authentication**: Use Firebase Authentication and consider enabling Multi-Factor Authentication (MFA).
-4. **Data Validation**: Validate data on both client and server sides.
-5. **HTTPS**: Ensure all data transmission is encrypted using HTTPS.
-6. **Content Security Policy (CSP)**: Implement CSP to prevent XSS attacks.
-7. **Dependency Management**: Keep dependencies up to date and audit them regularly.
-8. **Secure Headers**: Set secure HTTP headers.
-9. **Rate Limiting**: Implement rate limiting to protect API endpoints.
-10. **Monitoring and Logging**: Enable logging and set up alerts for unusual activities.
-11. **Role-Based Access Control (RBAC)**: Implement RBAC to ensure users only have access to necessary resources.
-12. **Secure Storage**: Encrypt sensitive data stored in the database.
+3. **Data Validation**: Validate data on both client and server sides.
+4. **HTTPS**: Ensure all data transmission is encrypted using HTTPS.
+5. **Content Security Policy (CSP)**: Implement CSP to prevent XSS attacks.
+6. **Dependency Management**: Keep dependencies up to date and audit them regularly.
+7. **Secure Headers**: Set secure HTTP headers.
+8. **Rate Limiting**: Implement rate limiting to protect API endpoints.
+9. **Monitoring and Logging**: Enable logging and set up alerts for unusual activities.
+10. **Secure Storage**: Encrypt sensitive data stored in the database.
 
 ## Learn More
 
@@ -138,9 +135,3 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - An interactive Next.js tutorial.
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
