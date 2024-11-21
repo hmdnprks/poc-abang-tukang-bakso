@@ -54,9 +54,18 @@ You can start editing the page by modifying `src/app/page.tsx`. The page auto-up
 public/
 src/
   app/
-  components/
-  hooks/
-  lib/
+  core/
+    entities/
+    repositories/
+    services/
+    usecases/
+  data/
+    datasources/
+    repositories/
+  infrastructure/
+  presentation/
+    components/
+    hooks/
 [tailwind.config.ts]
 [tsconfig.json]
 ```
