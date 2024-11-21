@@ -1,5 +1,5 @@
-import { getDatabase, ref, push, set } from 'firebase/database';
-import { app } from '../../infrastructure/firebase/firebase';
+import { getDatabase, ref, push, set, update } from 'firebase/database';
+import { app, realtimeDb } from '@infrastructure/firebase/firebase';
 
 export class FirebaseUserDatasource {
   private db = getDatabase(app);
@@ -8,5 +8,18 @@ export class FirebaseUserDatasource {
     const userRef = push(ref(this.db, 'users'));
     await set(userRef, data);
     return { ...data, docId: userRef.key };
+  }
+
+  async updateUserLocation(userId: string, latitude: number, longitude: number): Promise<void> {
+    const userRef = ref(realtimeDb, `users/${userId}`);
+    await update(userRef, {
+      location: { latitude, longitude },
+      status: 'active',
+    });
+  }
+
+  async updateUserStatus(userId: string, status: string): Promise<void> {
+    const userRef = ref(realtimeDb, `users/${userId}`);
+    await update(userRef, { status });
   }
 }

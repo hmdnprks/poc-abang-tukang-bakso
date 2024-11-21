@@ -23,7 +23,8 @@
       "@core/*": ["./src/core/*"],
       "@data/*": ["./src/data/*"],
       "@hooks/*": ["./src/presentation/hooks/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"]
     },
     "types": ["jest", "@testing-library/jest-dom"]
   },
