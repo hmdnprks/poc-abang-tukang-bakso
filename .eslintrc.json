@@ -81,12 +81,6 @@
       }
     ],
     "react/jsx-curly-spacing": 2,
-    "react/jsx-handler-names": [
-      2,
-      {
-        "eventHandlerPrefix": "_handle"
-      }
-    ],
     "react/jsx-key": 2,
     "react/jsx-max-depth": [
       2,

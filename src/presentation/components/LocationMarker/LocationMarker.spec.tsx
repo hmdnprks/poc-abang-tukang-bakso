@@ -7,7 +7,7 @@ import { LatLngTuple } from 'leaflet';
 
 jest.mock('react-leaflet', () => ({
   Marker: ({ children, eventHandlers }: any) => (
-    <div data-testid="marker" onClick={eventHandlers.click} onBlur={eventHandlers.popupclose}>
+    <div data-testid="marker" onBlur={eventHandlers.popupclose} onClick={eventHandlers.click}>
       {children}
     </div>
   ),
@@ -67,7 +67,7 @@ describe('LocationMarker Component', () => {
   });
 
   test('renders marker, popup, and tooltip with correct props', () => {
-    render(<LocationMarker position={mockPosition} popupText="Hello Marker" userPosition={mockUserPosition} />);
+    render(<LocationMarker popupText="Hello Marker" position={mockPosition} userPosition={mockUserPosition} />);
 
 
     expect(screen.getByTestId('marker')).toBeInTheDocument();
@@ -76,7 +76,7 @@ describe('LocationMarker Component', () => {
   });
 
   test('hides route and clears state on popup close', async () => {
-    render(<LocationMarker position={mockPosition} popupText="Hello Marker" userPosition={mockUserPosition} />);
+    render(<LocationMarker popupText="Hello Marker" position={mockPosition} userPosition={mockUserPosition} />);
 
     const marker = screen.getByTestId('marker');
 
@@ -100,7 +100,7 @@ describe('LocationMarker Component', () => {
   });
 
   test('handles no userPosition gracefully', async () => {
-    render(<LocationMarker position={mockPosition} popupText="Hello Marker" userPosition={null} />);
+    render(<LocationMarker popupText="Hello Marker" position={mockPosition} userPosition={null} />);
 
     const marker = screen.getByTestId('marker');
 

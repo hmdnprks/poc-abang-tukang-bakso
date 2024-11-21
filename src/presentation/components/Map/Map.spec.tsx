@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import MapComponent from './Map';
 
 jest.mock('react-leaflet', () => ({
@@ -13,7 +13,7 @@ jest.mock('../LocationMarker/LocationMarker', () => {
 });
 
 const onValueMock = jest.fn();
-const updateMock = jest.fn();
+
 jest.mock('firebase/database', () => ({
   ref: jest.fn(),
   onValue: jest.fn((ref, callback) => onValueMock(ref, callback)),
@@ -40,8 +40,8 @@ jest.mock('next/navigation', () => ({
 jest.mock('@core/usecases/PermissionStatusUseCase', () => ({
   PermissionStatusUseCase: jest.fn(() => ({
     execute: jest.fn((permissionDenied, gpsError, role) => {
-      if (permissionDenied) return 'permissionDenied';
-      if (gpsError) return 'gpsError';
+      if (permissionDenied) {return 'permissionDenied';}
+      if (gpsError) {return 'gpsError';}
       return role === 'customer' ? 'customer' : 'vendor';
     }),
   })),

@@ -9,8 +9,8 @@ const CloseButton: React.FC<CloseButtonProps> = ({ onClick }) => {
   return (
     <button
       className="absolute top-4 right-4 z-[1000] p-2 bg-white rounded-full shadow-xl hover:bg-gray-200 transition duration-200"
-      onClick={onClick}
       data-testid="btn-close"
+      onClick={onClick}
     >
       <svg
         className="h-6 w-6 text-gray-600"

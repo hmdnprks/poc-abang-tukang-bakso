@@ -1,4 +1,3 @@
-// src/presentation/components/MapComponent.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import { LatLngTuple } from 'leaflet';
@@ -46,10 +45,10 @@ const MapComponent: React.FC = () => {
       const { message } = await updateUserStatusUseCase.execute(user.docId, user.role);
       toast.info(message);
 
-      setUser({ name: "", role: "", docId: "" });
-      router.push("/verification");
+      setUser({ name: '', role: '', docId: '' });
+      router.push('/verification');
     } catch (error) {
-      toast.error("Failed to update user status. Please try again.");
+      toast.error('Failed to update user status. Please try again.');
     } finally {
       setIsDrawerOpen(false);
     }
