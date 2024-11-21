@@ -45,7 +45,6 @@ You can start editing the page by modifying `src/app/page.tsx`. The page auto-up
 ## Project Structure
 
 ```bash
-.DS_Store
 .env
 [.env.local]
 [.eslintrc.json]
