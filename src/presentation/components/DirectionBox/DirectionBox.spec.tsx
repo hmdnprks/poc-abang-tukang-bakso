@@ -8,7 +8,7 @@ jest.mock('@heroicons/react/24/outline', () => ({
 }));
 
 describe('DirectionBox', () => {
-  const steps = [
+  const steps: { direction: 'right' | 'left' | 'straight'; description: string }[] = [
     { direction: 'right', description: 'Turn right at the traffic light' },
     { direction: 'left', description: 'Turn left at the next intersection' },
     { direction: 'straight', description: 'Go straight for 2 miles' },
@@ -28,6 +28,19 @@ describe('DirectionBox', () => {
     expect(screen.getByTestId('arrow-right')).toBeInTheDocument();
     expect(screen.getByTestId('arrow-left')).toBeInTheDocument();
     expect(screen.getByTestId('arrow-up')).toBeInTheDocument();
+  });
+
+  test('renders no icon for unsupported directions', () => {
+    const unsupportedSteps = [
+      { direction: 'unknown', description: 'Unknown direction' },
+    ];
+    render(<DirectionBox steps={unsupportedSteps} />);
+
+    expect(screen.getByText('Unknown direction')).toBeInTheDocument();
+
+    expect(screen.queryByTestId('arrow-right')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('arrow-left')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('arrow-up')).not.toBeInTheDocument();
   });
 
   test('handles an empty steps array gracefully', () => {

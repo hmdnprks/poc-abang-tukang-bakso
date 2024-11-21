@@ -1,4 +1,3 @@
-// src/core/usecases/CalculateRouteUseCase.ts
 import { LatLngTuple } from 'leaflet';
 import { RouteDatasource } from '../../data/datasources/RouteDatasource';
 import { RouteData } from '../entities/RouteData';

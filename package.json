@@ -52,6 +52,7 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "eslint-plugin-unused-vars": "^0.0.3",
     "husky": "^8.0.0",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-fetch-mock": "^3.0.3",

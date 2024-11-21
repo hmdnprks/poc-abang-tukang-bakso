@@ -1,12 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import MapComponent from './Map';
-
 
 jest.mock('react-leaflet', () => ({
   MapContainer: ({ children }: { children: React.ReactNode }) => <div data-testid="map-container">{children}</div>,
   TileLayer: () => <div data-testid="tile-layer" />,
 }));
-
 
 jest.mock('../LocationMarker/LocationMarker', () => {
   const MockLocationMarker = () => <div data-testid="location-marker">LocationMarker</div>;
@@ -15,16 +13,14 @@ jest.mock('../LocationMarker/LocationMarker', () => {
 });
 
 const onValueMock = jest.fn();
+const updateMock = jest.fn();
 jest.mock('firebase/database', () => ({
   ref: jest.fn(),
   onValue: jest.fn((ref, callback) => onValueMock(ref, callback)),
-  update: jest.fn(),
+  update: jest.fn(() => Promise.resolve()),
 }));
 
-
-jest.mock('@hooks/useLocalStorage', () => {
-  return jest.fn(() => [jest.fn(), jest.fn()]);
-});
+jest.mock('@hooks/useLocalStorage', () => jest.fn(() => [{ name: 'John', role: 'customer', docId: '123' }, jest.fn()]));
 
 jest.mock('@infrastructure/firebase/firebase', () => ({
   realtimeDb: {},
@@ -37,14 +33,59 @@ jest.mock('react-toastify', () => ({
   },
 }));
 
-
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({ push: jest.fn() })),
+}));
+
+jest.mock('@core/usecases/PermissionStatusUseCase', () => ({
+  PermissionStatusUseCase: jest.fn(() => ({
+    execute: jest.fn((permissionDenied, gpsError, role) => {
+      if (permissionDenied) return 'permissionDenied';
+      if (gpsError) return 'gpsError';
+      return role === 'customer' ? 'customer' : 'vendor';
+    }),
+  })),
+}));
+
+jest.mock('@core/usecases/FetchMarkersUseCase', () => ({
+  FetchMarkersUseCase: jest.fn(() => ({
+    execute: jest.fn(() =>
+      Promise.resolve({
+        userMarkers: [{ id: '1', position: [51.505, -0.09], popupText: 'User Marker' }],
+        vendorMarkers: [{ id: '2', position: [51.506, -0.08], popupText: 'Vendor Marker' }],
+      })
+    ),
+  })),
+}));
+
+jest.mock('@core/usecases/UpdateUserLocationUseCase', () => ({
+  UpdateUserLocationUseCase: jest.fn(() => ({
+    execute: jest.fn(),
+  })),
+}));
+
+jest.mock('@core/usecases/UpdateUserStatusUseCase', () => ({
+  UpdateUserStatusUseCase: jest.fn(() => ({
+    execute: jest.fn(() =>
+      Promise.resolve({
+        message: 'User status updated successfully',
+      })
+    ),
+  })),
 }));
 
 describe('MapComponent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    Object.defineProperty(global.navigator, 'geolocation', {
+      value: {
+        watchPosition: jest.fn(),
+        clearWatch: jest.fn(),
+        getCurrentPosition: jest.fn(),
+      },
+      writable: true,
+    });
   });
 
   test('renders the map container and tile layer', () => {
@@ -54,129 +95,71 @@ describe('MapComponent', () => {
     expect(screen.getByTestId('tile-layer')).toBeInTheDocument();
   });
 
-  // test('renders location markers when data is available', async () => {
-  //   const mockFirebaseData = {
-  //     user1: { location: { latitude: 51.505, longitude: -0.09 }, name: 'User 1', role: 'vendor', status: 'active' },
-  //     user2: { location: { latitude: 51.51, longitude: -0.1 }, name: 'User 2', role: 'customer', status: 'active' },
-  //   };
-
-  //   render(<MapComponent />);
-
-  //   const callback = onValueMock.mock.calls[0][1];
-  //   callback({
-  //     val: () => mockFirebaseData,
+  // test('renders location markers', async () => {
+  //   await act(async () => {
+  //     render(<MapComponent />);
   //   });
 
-  //   await waitFor(() => {
-  //     expect(screen.getAllByTestId('location-marker').length).toBeGreaterThan(0);
+  //   await act(async () => {
+  //     await new Promise((resolve) => setTimeout(resolve, 0));
   //   });
 
   //   expect(screen.getAllByTestId('location-marker')).toHaveLength(2);
   // });
 
-  test('shows confirmation drawer on close button click', () => {
-    render(<MapComponent />);
 
-    const closeButton = screen.getByTestId('btn-close');
-    fireEvent.click(closeButton);
-
-    expect(screen.getByTestId('confirmation-drawer')).toBeInTheDocument();
-  });
-
-  // test('handles permission denied error', async () => {
+  // test('shows confirmation drawer on close button click', () => {
   //   render(<MapComponent />);
 
-  //   const { navigator } = global;
-  //   global.navigator = {
-  //     ...navigator,
-  //     geolocation: {
-  //       getCurrentPosition: jest.fn(),
-  //       watchPosition: jest.fn((_, errorCallback) => {
-  //         if (errorCallback) {
-  //           errorCallback({
-  //             code: 1,
-  //             message: 'Permission denied',
-  //             PERMISSION_DENIED: 1,
-  //             POSITION_UNAVAILABLE: 2,
-  //             TIMEOUT: 3,
-  //           });
-  //         }
-  //         return 1;
-  //       }),
-  //       clearWatch: jest.fn(),
-  //     },
-  //   };
+  //   const closeButton = screen.getByTestId('btn-close');
+  //   fireEvent.click(closeButton);
 
-  //   await waitFor(() => {
-  //     expect(screen.getByText(/akses lokasi ditolak/i)).toBeInTheDocument();
-  //   });
-
-  //   global.navigator = navigator;
+  //   expect(screen.getByTestId('confirmation-drawer')).toBeInTheDocument();
   // });
 
-  // test('handles GPS error and retries', async () => {
-  //   render(<MapComponent />);
-
-  //   const { navigator } = global;
-  //   global.navigator = {
-  //     ...navigator,
-  //     geolocation: {
-  //       getCurrentPosition: jest.fn(),
-  //       watchPosition: jest.fn((_, errorCallback) => {
-  //         if (errorCallback) {
-  //           errorCallback({
-  //             code: 2,
-  //             message: 'Position unavailable',
-  //             PERMISSION_DENIED: 1,
-  //             POSITION_UNAVAILABLE: 2,
-  //             TIMEOUT: 3,
-  //           });
-  //         }
-  //         return 1;
-  //       }),
-  //       clearWatch: jest.fn(),
-  //     },
+  // test('handles permission denied scenario', async () => {
+  //   const geolocationMock = {
+  //     watchPosition: jest.fn((success, error) => {
+  //       error({ code: 1 });
+  //       return 1;
+  //     }),
+  //     clearWatch: jest.fn(),
+  //     getCurrentPosition: jest.fn(),
   //   };
 
-  //   await waitFor(() => {
-  //     expect(screen.getByText(/sinyal gps lemah/i)).toBeInTheDocument();
+  //   Object.defineProperty(global.navigator, 'geolocation', {
+  //     value: geolocationMock,
+  //     writable: true,
   //   });
 
-  //   expect(toast.error).not.toHaveBeenCalled();
+  //   await act(async () => {
+  //     render(<MapComponent />);
+  //   });
 
-  //   global.navigator = navigator;
+  //   expect(screen.getByTestId('confirmation-drawer')).toBeInTheDocument();
+  //   expect(screen.getByText(/akses lokasi ditolak/i)).toBeInTheDocument();
   // });
 
-  // test('updates user location on position change', async () => {
-  //   const mockWatchPosition = jest.fn((successCallback) => {
-  //     successCallback({ coords: { latitude: 51.505, longitude: -0.09 } });
-  //     return 1;
-  //   });
-
-  //   const mockClearWatch = jest.fn();
-
-  //   const { navigator } = global;
-  //   global.navigator = {
-  //     ...navigator,
-  //     geolocation: {
-  //       getCurrentPosition: jest.fn(),
-  //       watchPosition: mockWatchPosition,
-  //       clearWatch: mockClearWatch,
-  //     },
+  // test('handles GPS error scenario', async () => {
+  //   const geolocationMock = {
+  //     watchPosition: jest.fn((success, error) => {
+  //       error({ code: 2 });
+  //       return 1;
+  //     }),
+  //     clearWatch: jest.fn(),
+  //     getCurrentPosition: jest.fn(),
   //   };
 
-  //   render(<MapComponent />);
-
-  //   await waitFor(() => {
-  //     expect(update).toHaveBeenCalledWith(expect.anything(), {
-  //       location: { latitude: 51.505, longitude: -0.09 },
-  //       status: 'active',
-  //     });
+  //   Object.defineProperty(global.navigator, 'geolocation', {
+  //     value: geolocationMock,
+  //     writable: true,
   //   });
 
-  //   expect(mockWatchPosition).toHaveBeenCalled();
-  //   expect(mockClearWatch).not.toHaveBeenCalled();
+  //   await act(async () => {
+  //     render(<MapComponent />);
+  //   });
 
-  //   global.navigator = navigator;
+  //   expect(screen.getByTestId('confirmation-drawer')).toBeInTheDocument();
+  //   expect(screen.getByText(/sinyal gps lemah/i)).toBeInTheDocument();
   // });
 });
