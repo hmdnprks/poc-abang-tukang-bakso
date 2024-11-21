@@ -1,4 +1,3 @@
-// src/presentation/components/LocationMarker.tsx
 import { useState } from 'react';
 import { Marker, Polyline, Popup, Tooltip } from 'react-leaflet';
 import { icon, LatLngTuple } from 'leaflet';

@@ -31,7 +31,7 @@ describe('Firebase Initialization', () => {
 
 
     jest.isolateModules(() => {
-      const { app } = require('../firebase');
+      const { app } = require('./firebase');
       expect(getApp).toHaveBeenCalled();
       expect(initializeApp).not.toHaveBeenCalled();
       expect(app).toEqual(mockApp);
@@ -51,7 +51,7 @@ describe('Firebase Initialization', () => {
 
 
     jest.isolateModules(() => {
-      const { analytics } = require('../firebase');
+      const { analytics } = require('./firebase');
       expect(getAnalytics).not.toHaveBeenCalled();
       expect(analytics).toBeNull();
     });

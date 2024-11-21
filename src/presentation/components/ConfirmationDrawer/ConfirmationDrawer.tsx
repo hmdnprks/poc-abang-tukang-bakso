@@ -25,6 +25,7 @@ const ConfirmationDrawer: FC<ConfirmationDrawerProps> = ({
                     md:rounded-2xl z-[2000]
                     md:max-w-md md:w-1/3 md:mx-auto md:shadow-lg p-6 flex flex-col items-center`}
         style={{ maxWidth: '100%', transition: 'transform 0.3s ease-in-out' }}
+        data-testid="confirmation-drawer"
       >
 
         <div className="w-12 h-1 bg-gray-300 rounded-full mb-4 md:hidden" />

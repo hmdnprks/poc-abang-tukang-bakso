@@ -1,4 +1,4 @@
-import { estimateDuration } from '../common';
+import { estimateDuration } from '../estimateDuration';
 
 describe('estimateDuration', () => {
   test('calculates duration for walking', () => {
@@ -22,7 +22,7 @@ describe('estimateDuration', () => {
   });
 
   test('throws an error for an unknown mode', () => {
-    expect(() => estimateDuration(10, 'unknown' as any)).toThrow('Unknown mode: unknown');
+    expect(() => estimateDuration(10, 'unknown' as any)).toThrow('Invalid mode: unknown');
   });
 
   test('handles zero distance', () => {

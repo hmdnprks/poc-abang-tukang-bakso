@@ -8,7 +8,11 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     // Handle module aliases (if you have them in your tsconfig.json)
-    '^@components/(.*)$': '<rootDir>/src/components/$1',
+    '^@components/(.*)$': '<rootDir>/src/presentation/components/$1',
+    '^@core/(.*)$': '<rootDir>/src/core/$1',
+    '^@hooks/(.*)$': '<rootDir>/src/presentation/hooks/$1',
+    '^@data/(.*)$': '<rootDir>/src/data/$1',
+    '^@infrastructure/(.*)$': '<rootDir>/src/infrastructure/$1',
   },
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
   transform: {

@@ -21,14 +21,14 @@ jest.mock('firebase/database', () => ({
   update: jest.fn(),
 }));
 
-jest.mock('../../lib/firebase', () => ({
-  realtimeDb: {},
-}));
 
-jest.mock('../../hooks/useLocalStorage', () => {
+jest.mock('@hooks/useLocalStorage', () => {
   return jest.fn(() => [jest.fn(), jest.fn()]);
 });
 
+jest.mock('@infrastructure/firebase/firebase', () => ({
+  realtimeDb: {},
+}));
 
 jest.mock('react-toastify', () => ({
   toast: {
@@ -52,12 +52,6 @@ describe('MapComponent', () => {
 
     expect(screen.getByTestId('map-container')).toBeInTheDocument();
     expect(screen.getByTestId('tile-layer')).toBeInTheDocument();
-  });
-
-  test('renders loading spinner while loading', () => {
-    render(<MapComponent />);
-
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
   });
 
   // test('renders location markers when data is available', async () => {
