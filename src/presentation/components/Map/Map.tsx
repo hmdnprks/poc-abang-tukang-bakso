@@ -6,7 +6,7 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import { useCallback, useEffect, useState } from 'react';
 import LocationMarker from '../LocationMarker/LocationMarker';
 import useLocalStorage from '../../hooks/useLocalStorage';
-import { realtimeDb } from '../../lib/firebase';
+import { realtimeDb } from '@utils/firebase';
 import { ref, onValue, update } from 'firebase/database';
 import { useRouter } from 'next/navigation';
 import ConfirmationDrawer from '@components/ConfirmationDrawer/ConfirmationDrawer';

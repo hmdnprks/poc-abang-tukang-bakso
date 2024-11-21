@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Marker, Polyline, Popup, Tooltip, useMap } from 'react-leaflet';
 import { icon, LatLngTuple } from 'leaflet';
 import DirectionBox from '@components/DirectionBox/DirectionBox';
-import { estimateDuration } from '../../lib/common';
+import { estimateDuration } from '@utils/common';
 import WaypointsBox from '@components/WaypointsBox/WaypointsBox';
 interface LocationMarkerProps {
   position: LatLngTuple;
