@@ -55,11 +55,25 @@ const MapComponent: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!user?.docId) {
+      router.push('/verification');
+    }
+  }, [user, router]);
+
+  useEffect(() => {
     if (!user?.docId) { return; }
 
     fetchMarkersUseCase.execute(user.role, user.docId).then(({ userMarkers, vendorMarkers }) => {
-      setUserMarkers(userMarkers);
-      setVendorMarkers(vendorMarkers);
+
+      if (user.role === 'vendor') {
+        const loggedInVendor = vendorMarkers.find((marker) => marker.id === user.docId);
+        setUserMarkers(userMarkers);
+        setVendorMarkers(loggedInVendor ? [loggedInVendor] : []);
+      } else {
+        const loggedInCustomer = userMarkers.find((marker) => marker.id === user.docId);
+        setUserMarkers(loggedInCustomer ? [loggedInCustomer] : []);
+        setVendorMarkers(vendorMarkers);
+      }
     });
   }, [user]);
 
@@ -96,7 +110,7 @@ const MapComponent: React.FC = () => {
             <LocationMarker key={marker.id} popupText={marker.popupText} position={marker.position} userPosition={position} />
           ))}
           {userMarkers.map((marker) => (
-            <LocationMarker key={marker.id} popupText={marker.popupText} position={marker.position} userPosition={position} />
+            <LocationMarker key={marker.id} iconUrl="/images/user.png" popupText={marker.popupText} position={marker.position} userPosition={position} />
           ))}
         </MapContainer>
       </div>
