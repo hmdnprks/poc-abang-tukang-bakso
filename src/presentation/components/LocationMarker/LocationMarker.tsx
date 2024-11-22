@@ -65,7 +65,9 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
     <>
       <Marker
         eventHandlers={{
-          click: handleMarkerClick,
+          click: async () => {
+            await handleMarkerClick();
+          },
           popupclose: handlePopupClose,
         }}
         icon={customIcon}

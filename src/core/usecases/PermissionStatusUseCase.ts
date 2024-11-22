@@ -2,11 +2,11 @@ export class PermissionStatusUseCase {
   execute(permissionDenied: boolean, gpsError: boolean, role: string): string {
     if (this.isPermissionDenied(permissionDenied)) {
       return 'permissionDenied';
-    } else if (this.isGpsError(gpsError)) {
-      return 'gpsError';
-    } else {
-      return this.getRoleStatus(role);
     }
+    if (this.isGpsError(gpsError)) {
+      return 'gpsError';
+    }
+    return this.getRoleStatus(role);
   }
 
   private isPermissionDenied(permissionDenied: boolean): boolean {
@@ -17,7 +17,21 @@ export class PermissionStatusUseCase {
     return gpsError;
   }
 
+  private isCustomer(role: string): boolean {
+    return role === 'customer';
+  }
+
+  private isVendor(role: string): boolean {
+    return role === 'vendor';
+  }
+
   private getRoleStatus(role: string): string {
-    return role === 'customer' ? 'customer' : 'vendor';
+    if (this.isCustomer(role)) {
+      return 'customer';
+    }
+    if (this.isVendor(role)) {
+      return 'vendor';
+    }
+    return 'unknown';
   }
 }

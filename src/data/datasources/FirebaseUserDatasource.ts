@@ -2,7 +2,7 @@ import { getDatabase, ref, push, set, update } from 'firebase/database';
 import { app, realtimeDb } from '@infrastructure/firebase/firebase';
 
 export class FirebaseUserDatasource {
-  private db = getDatabase(app);
+  private readonly db = getDatabase(app);
 
   async registerUser(data: any): Promise<any> {
     const userRef = push(ref(this.db, 'users'));

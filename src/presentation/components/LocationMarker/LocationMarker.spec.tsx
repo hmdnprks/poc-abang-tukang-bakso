@@ -7,7 +7,7 @@ import { LatLngTuple } from 'leaflet';
 
 jest.mock('react-leaflet', () => ({
   Marker: ({ children, eventHandlers }: any) => (
-    <div data-testid="marker" onBlur={eventHandlers.popupclose} onClick={eventHandlers.click} onKeyDown={(e) => e.key === 'Enter' && eventHandlers.click()} role="button">
+    <div data-testid="marker" tabIndex={0} onBlur={eventHandlers.popupclose} onClick={eventHandlers.click} onKeyDown={(e) => e.key === 'Enter' && eventHandlers.click()} role="button">
       {children}
     </div>
   ),
