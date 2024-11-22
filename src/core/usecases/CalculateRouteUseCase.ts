@@ -3,7 +3,7 @@ import { RouteDatasource } from '../../data/datasources/RouteDatasource';
 import { RouteData } from '../entities/RouteData';
 
 export class CalculateRouteUseCase {
-  private datasource: RouteDatasource;
+  private readonly datasource: RouteDatasource;
 
   constructor(datasource: RouteDatasource) {
     this.datasource = datasource;

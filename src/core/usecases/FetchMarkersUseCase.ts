@@ -2,7 +2,7 @@ import { MarkerRepository } from '@core/repositories/MarkerRepository';
 import { Marker } from '../entities/Marker';
 
 export class FetchMarkersUseCase {
-  constructor(private markerRepository: MarkerRepository) { }
+  constructor(private readonly markerRepository: MarkerRepository) { }
 
   async execute(userRole: string, userDocId: string): Promise<{
     userMarkers: Marker[];

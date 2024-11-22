@@ -7,7 +7,7 @@ import { LatLngTuple } from 'leaflet';
 
 jest.mock('react-leaflet', () => ({
   Marker: ({ children, eventHandlers }: any) => (
-    <div data-testid="marker" onBlur={eventHandlers.popupclose} onClick={eventHandlers.click}>
+    <div data-testid="marker" onBlur={eventHandlers.popupclose} onClick={eventHandlers.click} onKeyDown={(e) => e.key === 'Enter' && eventHandlers.click()} role="button">
       {children}
     </div>
   ),
@@ -21,8 +21,8 @@ jest.mock('@components/DirectionBox/DirectionBox', () => ({
   __esModule: true,
   default: ({ steps }: any) => (
     <div data-testid="direction-box">
-      {steps.map((step: any, index: number) => (
-        <div key={index}>{step.description}</div>
+      {steps.map((step: any) => (
+        <div key={step.description}>{step.description}</div>
       ))}
     </div>
   ),
@@ -32,8 +32,8 @@ jest.mock('@components/WaypointsBox/WaypointsBox', () => ({
   __esModule: true,
   default: ({ waypoints }: any) => (
     <div data-testid="waypoints-box">
-      {waypoints.map((waypoint: any, index: number) => (
-        <div key={index}>{waypoint.name}</div>
+      {waypoints.map((waypoint: any) => (
+        <div key={waypoint.name}>{waypoint.name}</div>
       ))}
     </div>
   ),

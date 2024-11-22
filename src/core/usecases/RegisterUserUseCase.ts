@@ -2,7 +2,7 @@ import { UserRepository } from '../repositories/UserRepository';
 import { User } from '../entities/User';
 
 export class RegisterUserUseCase {
-  private repository: UserRepository;
+  private readonly repository: UserRepository;
 
   constructor(repository: UserRepository) {
     this.repository = repository;

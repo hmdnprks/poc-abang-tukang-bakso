@@ -1,7 +1,7 @@
 import { UserRepository } from '@core/repositories/UserRepository';
 
 export class UpdateUserStatusUseCase {
-  constructor(private userRepository: UserRepository) { }
+  constructor(private readonly userRepository: UserRepository) { }
 
   async execute(userId: string, role: string): Promise<{ message: string }> {
     try {

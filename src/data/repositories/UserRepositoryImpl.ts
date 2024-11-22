@@ -3,7 +3,7 @@ import { User } from '../../core/entities/User';
 import { FirebaseUserDatasource } from '../datasources/FirebaseUserDatasource';
 
 export class UserRepositoryImpl implements UserRepository {
-  private datasource: FirebaseUserDatasource;
+  private readonly datasource: FirebaseUserDatasource;
 
   constructor(datasource: FirebaseUserDatasource) {
     this.datasource = datasource;
