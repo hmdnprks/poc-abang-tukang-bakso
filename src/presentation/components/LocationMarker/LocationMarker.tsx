@@ -65,8 +65,10 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ position, popupText, ic
     <>
       <Marker
         eventHandlers={{
-          click: async () => {
-            await handleMarkerClick();
+          click: () => {
+            handleMarkerClick().catch((error) => {
+              throw new Error(error);
+            });
           },
           popupclose: handlePopupClose,
         }}
