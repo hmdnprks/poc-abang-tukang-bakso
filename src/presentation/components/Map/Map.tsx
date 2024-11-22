@@ -110,7 +110,7 @@ const MapComponent: React.FC = () => {
             <LocationMarker key={marker.id} popupText={marker.popupText} position={marker.position} userPosition={position} />
           ))}
           {userMarkers.map((marker) => (
-            <LocationMarker key={marker.id} iconUrl="/images/user.png" popupText={marker.popupText} position={marker.position} userPosition={position} />
+            <LocationMarker iconUrl="/images/user.png" key={marker.id} popupText={marker.popupText} position={marker.position} userPosition={position} />
           ))}
         </MapContainer>
       </div>
