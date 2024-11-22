@@ -133,8 +133,6 @@ Runs ESLint to check for linting errors.
 5. **Content Security Policy (CSP)**: Implement CSP to prevent XSS attacks.
 6. **Dependency Management**: Keep dependencies up to date and audit them regularly.
 7. **Secure Headers**: Set secure HTTP headers.
-8. **Monitoring and Logging**: Enable logging and set up alerts for unusual activities.
-9. **Secure Storage**: Encrypt sensitive data stored in the database.
 
 ## Learn More
 
