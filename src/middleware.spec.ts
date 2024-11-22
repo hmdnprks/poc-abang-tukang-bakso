@@ -12,7 +12,7 @@ describe('Middleware', () => {
 
     const cspHeaderValue = response.headers.get('Content-Security-Policy');
     expect(cspHeaderValue).toContain('default-src \'self\';');
-    expect(cspHeaderValue).toContain('script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' \'strict-dynamic\' https: http:;');
+    expect(cspHeaderValue).toContain('script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https: http:;');
     expect(cspHeaderValue).toContain('connect-src \'self\' http: https: wss:;');
   });
 
